@@ -8,7 +8,11 @@
   --color-accent: #f97316;
   --color-accent-hover: #ea580c;
   --color-success: #10b981;
+  --color-success-strong: #047857;
+  --color-success-subtle: #d1fae5;
   --color-warning: #f59e0b;
+  --color-warning-strong: #92400e;
+  --color-warning-subtle: #fef3c7;
   --color-error: #ef4444;
   --color-error-hover: #991b1b;
   --color-error-strong: #b91c1c;
