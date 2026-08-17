@@ -39,11 +39,11 @@ only transport configuration.
 
 **Independent Test**: Search fixtures by name, navigate offsets, and observe loading, empty, success and error.
 
-- [ ] T010 [P] [US1] Write failing collaborator hook tests in `frontend/src/features/colaboradores/use-colaboradores.test.tsx`
-- [ ] T011 [P] [US1] Write failing collaborator page accessibility tests in `frontend/src/app/colaboradores/page.test.tsx`
-- [ ] T012 [US1] Implement collaborator MSW query handler in `frontend/src/mocks/handlers/colaboradores.ts`
-- [ ] T013 [US1] Implement collaborator query hook in `frontend/src/features/colaboradores/use-colaboradores.ts`
-- [ ] T014 [US1] Implement responsive collaborator list page in `frontend/src/app/colaboradores/page.tsx`
+- [X] T010 [P] [US1] Write failing collaborator hook tests in `frontend/src/features/colaboradores/use-colaboradores.test.tsx`
+- [X] T011 [P] [US1] Write failing collaborator page accessibility tests in `frontend/src/app/colaboradores/page.test.tsx`
+- [X] T012 [US1] Implement collaborator MSW query handler in `frontend/src/mocks/handlers/colaboradores.ts`
+- [X] T013 [US1] Implement collaborator query hook in `frontend/src/features/colaboradores/use-colaboradores.ts`
+- [X] T014 [US1] Implement responsive collaborator list page in `frontend/src/app/colaboradores/page.tsx`
 
 **Checkpoint**: US1 passes independently and is navigable from the header.
 
