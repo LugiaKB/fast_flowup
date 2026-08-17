@@ -13,7 +13,10 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:a11y": "vitest run --testNamePattern=accessibility"
   },
   "dependencies": {
     "next": "^16.3.1",
@@ -21,11 +24,20 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.4",
+    "@types/jest-axe": "^3.5.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.5",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.1",
-    "typescript": "^5"
+    "jest-axe": "^11.0.0",
+    "jsdom": "^30.0.1",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
