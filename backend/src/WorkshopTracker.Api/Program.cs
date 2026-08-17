@@ -29,6 +29,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapColaboradoresEndpoints();
+app.MapWorkshopsEndpoints();
 
 if (!app.Environment.IsEnvironment("Testing"))
 {

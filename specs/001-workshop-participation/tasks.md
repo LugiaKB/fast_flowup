@@ -230,12 +230,12 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 
 ## Phase 11: Backend User Story 2 - Explorar workshops
 
-- [ ] T057 [P] [US2] Write failing workshop query/domain tests in `backend/tests/WorkshopTracker.Domain.Tests/WorkshopTests.cs` and `backend/tests/WorkshopTracker.Application.Tests/WorkshopQueryTests.cs`
-- [ ] T058 [P] [US2] Write failing workshop HTTP contract tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/WorkshopsQueryTests.cs`
-- [ ] T059 [US2] Implement Workshop and Participacao query models in `backend/src/WorkshopTracker.Domain/Workshops/`
-- [ ] T060 [US2] Implement workshop query use cases and active projections in `backend/src/WorkshopTracker.Application/Workshops/`
-- [ ] T061 [US2] Map workshops/attendance and create provider migrations in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
-- [ ] T062 [US2] Implement public workshop endpoints in `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs`
+- [X] T057 [P] [US2] Write failing workshop query/domain tests in `backend/tests/WorkshopTracker.Domain.Tests/WorkshopTests.cs` and `backend/tests/WorkshopTracker.Application.Tests/WorkshopQueryTests.cs`
+- [X] T058 [P] [US2] Write failing workshop HTTP contract tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/WorkshopsQueryTests.cs`
+- [X] T059 [US2] Implement Workshop and Participacao query models in `backend/src/WorkshopTracker.Domain/Workshops/`
+- [X] T060 [US2] Implement workshop query use cases and active projections in `backend/src/WorkshopTracker.Application/Workshops/`
+- [X] T061 [US2] Map workshops/attendance and create provider migrations in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
+- [X] T062 [US2] Implement public workshop endpoints in `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs`
 
 ---
 

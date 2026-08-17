@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorkshopTracker.Infrastructure.Persistence;
 
@@ -10,9 +11,11 @@ using WorkshopTracker.Infrastructure.Persistence;
 namespace WorkshopTracker.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WorkshopTrackerDbContext))]
-    partial class WorkshopTrackerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260817082747_AddWorkshops")]
+    partial class AddWorkshops
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");

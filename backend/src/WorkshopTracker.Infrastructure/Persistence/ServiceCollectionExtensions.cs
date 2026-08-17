@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WorkshopTracker.Application.Common;
 using WorkshopTracker.Application.Colaboradores;
+using WorkshopTracker.Application.Workshops;
 
 namespace WorkshopTracker.Infrastructure.Persistence;
 
@@ -18,6 +19,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IClock, SystemClock>();
         services.AddScoped<IColaboradorReadRepository, EfColaboradorReadRepository>();
+        services.AddScoped<IWorkshopReadRepository, EfWorkshopReadRepository>();
         services.AddDbContext<WorkshopTrackerDbContext>(options =>
         {
             if (string.Equals(provider, "Sqlite", StringComparison.OrdinalIgnoreCase))
