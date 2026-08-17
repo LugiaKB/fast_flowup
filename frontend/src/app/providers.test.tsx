@@ -18,6 +18,7 @@ afterEach(() => {
 describe("Providers", () => {
   it("renders immediately when API mode is selected", () => {
     vi.stubEnv("NEXT_PUBLIC_API_MODE", "api");
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://api.test");
 
     render(<Providers>Conteúdo</Providers>);
 

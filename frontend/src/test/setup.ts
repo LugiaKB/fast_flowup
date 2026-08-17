@@ -2,7 +2,11 @@ import "@testing-library/jest-dom/vitest";
 
 import { cleanup } from "@testing-library/react";
 import { toHaveNoViolations } from "jest-axe";
-import { afterAll, afterEach, beforeAll, expect } from "vitest";
+import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
+
+// Default to mock mode so unit tests don't require a live API URL.
+// Tests that need api mode must stub NEXT_PUBLIC_API_MODE and NEXT_PUBLIC_API_URL explicitly.
+vi.stubEnv("NEXT_PUBLIC_API_MODE", "mock");
 
 import { resetColaboradoresMockState } from "@/mocks/data/colaboradores";
 import { resetWorkshopsMockState } from "@/mocks/data/workshops";
