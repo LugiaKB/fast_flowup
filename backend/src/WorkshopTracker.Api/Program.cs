@@ -2,6 +2,8 @@ using WorkshopTracker.Infrastructure.Persistence;
 using WorkshopTracker.Api.Endpoints;
 using WorkshopTracker.Application;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 var frontendOrigin = builder.Configuration["FrontendOrigin"]
@@ -13,6 +15,27 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/problem+json";
+            await context.Response.WriteAsJsonAsync(
+                new
+                {
+                    type = "about:blank",
+                    title = "Autenticação administrativa necessária",
+                    status = StatusCodes.Status401Unauthorized,
+                    code = "unauthorized",
+                },
+                options: null,
+                contentType: "application/problem+json");
+        },
+    });
+builder.Services.AddAuthorization();
 builder.Services.AddCors(options => options.AddPolicy("frontend", policy => policy
     .WithOrigins(frontendOrigin)
     .AllowAnyHeader()
@@ -24,10 +47,20 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseCors("frontend");
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/api/auth/me", (ClaimsPrincipal user) => Results.Ok(new
+    {
+        id = user.FindFirstValue(ClaimTypes.NameIdentifier),
+        username = user.Identity?.Name,
+    }))
+    .WithName("getCurrentAdmin")
+    .WithTags("Authentication")
+    .RequireAuthorization();
 app.MapColaboradoresEndpoints();
 app.MapWorkshopsEndpoints();
 
