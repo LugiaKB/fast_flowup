@@ -4,10 +4,18 @@ using WorkshopTracker.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 var frontendOrigin = builder.Configuration["FrontendOrigin"]
     ?? throw new InvalidOperationException("FrontendOrigin é obrigatório.");
+var signingKey = builder.Configuration["JWT_SIGNING_KEY"]
+    ?? (builder.Environment.IsEnvironment("Testing") ? "test-signing-key-that-is-at-least-32-bytes" : throw new InvalidOperationException("JWT_SIGNING_KEY é obrigatória."));
+if (Encoding.UTF8.GetByteCount(signingKey) < 32)
+{
+    throw new InvalidOperationException("JWT_SIGNING_KEY deve ter ao menos 32 bytes.");
+}
 
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
@@ -16,8 +24,19 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => options.Events = new JwtBearerEvents
+    .AddJwtBearer(options =>
     {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
+            ClockSkew = TimeSpan.Zero,
+        };
+        options.Events = new JwtBearerEvents
+        {
         OnChallenge = async context =>
         {
             context.HandleResponse();
@@ -34,6 +53,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 options: null,
                 contentType: "application/problem+json");
         },
+        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddCors(options => options.AddPolicy("frontend", policy => policy

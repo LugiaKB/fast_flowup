@@ -14,6 +14,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="MySql.EntityFrameworkCore" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <ProjectReference Include="../WorkshopTracker.Application/WorkshopTracker.Application.csproj" />
     <ProjectReference Include="../WorkshopTracker.Domain/WorkshopTracker.Domain.csproj" />
   </ItemGroup>
