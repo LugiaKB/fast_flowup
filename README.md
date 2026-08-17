@@ -9,6 +9,17 @@ local e containerizada.
 
 ---
 
+## 🚀 Deploys em Produção
+
+| Serviço | Plataforma | Link de Acesso |
+|---|---|---|
+| **Frontend (Aplicação Web)** | Vercel | [https://fast-flowup.vercel.app](https://fast-flowup.vercel.app) |
+| **Backend (API REST)** | Render | [https://fast-flowup.onrender.com](https://fast-flowup.onrender.com) |
+| **Swagger UI (Documentação)** | Render | [https://fast-flowup.onrender.com/swagger](https://fast-flowup.onrender.com/swagger) |
+| **Health Check API** | Render | [https://fast-flowup.onrender.com/health](https://fast-flowup.onrender.com/health) |
+
+---
+
 ## Visão Geral
 
 A aplicação permite:
