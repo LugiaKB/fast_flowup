@@ -21,7 +21,7 @@ only transport configuration.
 
 - [X] T001 Scaffold Next.js 16 App Router and package scripts in `frontend/package.json` and `frontend/src/app/`
 - [X] T002 [P] Configure TypeScript, ESLint, Vitest, Testing Library and axe in `frontend/tsconfig.json`, `frontend/eslint.config.mjs` and `frontend/vitest.config.ts`
-- [ ] T003 [P] Configure Playwright browser projects in `frontend/playwright.config.ts` and `frontend/tests/e2e/`
+- [X] T003 [P] Configure Playwright browser projects in `frontend/playwright.config.ts` and `frontend/tests/e2e/`
 - [ ] T004 Generate TypeScript schemas from OpenAPI into `frontend/src/lib/api/schema.d.ts` and add its script to `frontend/package.json`
 - [ ] T005 Implement fetch client, Problem Details mapping and abort support in `frontend/src/lib/api/client.ts`
 - [ ] T006 Add deterministic fixtures and MSW browser/test bootstrap in `frontend/src/mocks/` and `frontend/src/test/setup.ts`
