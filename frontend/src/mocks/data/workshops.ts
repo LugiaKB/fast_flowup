@@ -110,4 +110,28 @@ export function restoreMockWorkshop(record: WorkshopDetail) {
   return record;
 }
 
+export function replaceMockParticipantes(
+  workshop: WorkshopDetail,
+  participantes: WorkshopDetail["participantes"],
+) {
+  workshop.participantes = [...participantes];
+  workshop.participantCount = participantes.length;
+  return workshop;
+}
+
+export function addMockParticipante(
+  workshop: WorkshopDetail,
+  participante: WorkshopDetail["participantes"][number],
+) {
+  if (!workshop.participantes.some(({ id }) => id === participante.id)) {
+    workshop.participantes.push(participante);
+  }
+  workshop.participantCount = workshop.participantes.length;
+}
+
+export function removeMockParticipante(workshop: WorkshopDetail, colaboradorId: number) {
+  workshop.participantes = workshop.participantes.filter(({ id }) => id !== colaboradorId);
+  workshop.participantCount = workshop.participantes.length;
+}
+
 resetWorkshopsMockState();

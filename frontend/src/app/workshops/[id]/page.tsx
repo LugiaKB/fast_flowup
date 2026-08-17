@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 
 import { Badge, Card, EmptyState, ErrorState, LoadingState } from "@/components/ui";
 import { useAuth } from "@/features/auth/auth-provider";
+import { AttendanceManagement } from "@/features/participantes/attendance-management";
 import { formatWorkshopDate, formatWorkshopTimeRange } from "@/features/workshops/format-workshop";
 import { WorkshopManagement } from "@/features/workshops/workshop-management";
 import { useWorkshop } from "@/features/workshops/use-workshops";
@@ -59,16 +60,16 @@ export default function WorkshopDetailPage() {
                     </Badge>
                   )}
                 </div>
-              <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-gray-700">
-                <p className="flex items-center gap-2">
-                  <CalendarDays aria-hidden="true" className="size-5 text-primary" />
-                  {formatWorkshopDate(data.dataRealizacao)}
-                </p>
-                <p className="flex items-center gap-2">
-                  <Clock3 aria-hidden="true" className="size-5 text-primary" />
-                  {formatWorkshopTimeRange(data.dataRealizacao, data.dataTermino)}
-                </p>
-              </div>
+                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-gray-700">
+                  <p className="flex items-center gap-2">
+                    <CalendarDays aria-hidden="true" className="size-5 text-primary" />
+                    {formatWorkshopDate(data.dataRealizacao)}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Clock3 aria-hidden="true" className="size-5 text-primary" />
+                    {formatWorkshopTimeRange(data.dataRealizacao, data.dataTermino)}
+                  </p>
+                </div>
               </div>
               {isAdmin && (
                 <WorkshopManagement
@@ -87,9 +88,18 @@ export default function WorkshopDetailPage() {
             </section>
 
             <section aria-labelledby="workshop-participants" className="mt-12">
-              <h2 id="workshop-participants" className="mb-6 text-2xl font-semibold">
-                Participantes
-              </h2>
+              <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <h2 id="workshop-participants" className="text-2xl font-semibold">
+                  Participantes
+                </h2>
+                {isAdmin && data.status === "active" && (
+                  <AttendanceManagement
+                    workshopId={data.id}
+                    participantes={data.participantes}
+                    onChanged={refetch}
+                  />
+                )}
+              </div>
               {data.participantes.length === 0 ? (
                 <EmptyState
                   title="Nenhum participante registrado"

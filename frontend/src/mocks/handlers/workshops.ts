@@ -5,10 +5,13 @@ import type { components } from "@/lib/api/schema";
 
 import { findMockColaborador } from "../data/colaboradores";
 import {
+  addMockParticipante,
   archiveMockWorkshop,
   createMockWorkshop,
   findMockWorkshop,
   listMockWorkshops,
+  removeMockParticipante,
+  replaceMockParticipantes,
   restoreMockWorkshop,
   updateMockWorkshop,
   type WorkshopDetail,
@@ -220,5 +223,64 @@ export const workshopsHandlers = [
       return problemResponse(409, "quarter_conflict", "Já existe um workshop ativo neste trimestre");
     }
     return HttpResponse.json(restoreMockWorkshop(workshop));
+  }),
+
+  http.put("*/api/workshops/:id/participantes", async ({ params, request }) => {
+    const unauthorized = requireAuthorization(request);
+    if (unauthorized) return unauthorized;
+    const workshop = findMockWorkshop(Number(params.id));
+    if (!workshop) return problemResponse(404, "workshop_not_found", "Workshop não encontrado");
+    if (workshop.status !== "active") {
+      return problemResponse(409, "workshop_archived", "Workshop arquivado não aceita participantes");
+    }
+    const body = (await request.json()) as { colaboradorIds?: number[] };
+    const ids = body.colaboradorIds;
+    if (
+      !Array.isArray(ids) ||
+      ids.some((id) => !Number.isInteger(id) || id < 1) ||
+      new Set(ids).size !== ids.length
+    ) {
+      return problemResponse(400, "validation_error", "A lista de participantes é inválida");
+    }
+    const participantes = ids.map(findMockColaborador);
+    if (participantes.some((item) => !item)) {
+      return problemResponse(404, "collaborator_not_found", "Colaborador não encontrado");
+    }
+    if (participantes.some((item) => item?.status !== "active")) {
+      return problemResponse(409, "inactive_collaborator", "Todos os colaboradores devem estar ativos");
+    }
+    return HttpResponse.json(
+      replaceMockParticipantes(
+        workshop,
+        participantes.filter((item): item is NonNullable<typeof item> => Boolean(item)),
+      ),
+    );
+  }),
+
+  http.put("*/api/workshops/:id/participantes/:colaboradorId", ({ params, request }) => {
+    const unauthorized = requireAuthorization(request);
+    if (unauthorized) return unauthorized;
+    const workshop = findMockWorkshop(Number(params.id));
+    const participante = findMockColaborador(Number(params.colaboradorId));
+    if (!workshop || !participante) {
+      return problemResponse(404, "record_not_found", "Workshop ou colaborador não encontrado");
+    }
+    if (workshop.status !== "active" || participante.status !== "active") {
+      return problemResponse(409, "inactive_record", "Workshop e colaborador devem estar ativos");
+    }
+    addMockParticipante(workshop, participante);
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.delete("*/api/workshops/:id/participantes/:colaboradorId", ({ params, request }) => {
+    const unauthorized = requireAuthorization(request);
+    if (unauthorized) return unauthorized;
+    const workshop = findMockWorkshop(Number(params.id));
+    const participante = findMockColaborador(Number(params.colaboradorId));
+    if (!workshop || !participante) {
+      return problemResponse(404, "record_not_found", "Workshop ou colaborador não encontrado");
+    }
+    removeMockParticipante(workshop, participante.id);
+    return new HttpResponse(null, { status: 204 });
   }),
 ];

@@ -121,10 +121,10 @@ only transport configuration.
 
 **Independent Test**: Execute bulk replacement and idempotent individual operations from workshop detail.
 
-- [ ] T037 [P] [US6] Write failing attendance management tests in `frontend/src/features/participantes/attendance-management.test.tsx`
-- [ ] T038 [US6] Extend workshop MSW handlers with attendance operations in `frontend/src/mocks/handlers/workshops.ts`
-- [ ] T039 [US6] Implement attendance hooks in `frontend/src/features/participantes/use-attendance-mutations.ts`
-- [ ] T040 [US6] Implement accessible participant selection sheet in `frontend/src/features/participantes/attendance-management.tsx`
+- [X] T037 [P] [US6] Write failing attendance management tests in `frontend/src/features/participantes/attendance-management.test.tsx`
+- [X] T038 [US6] Extend workshop MSW handlers with attendance operations in `frontend/src/mocks/handlers/workshops.ts`
+- [X] T039 [US6] Implement attendance hooks in `frontend/src/features/participantes/use-attendance-mutations.ts`
+- [X] T040 [US6] Implement accessible participant selection sheet in `frontend/src/features/participantes/attendance-management.tsx`
 
 **Checkpoint**: Every required frontend journey works with contract-aligned mocks.
 
