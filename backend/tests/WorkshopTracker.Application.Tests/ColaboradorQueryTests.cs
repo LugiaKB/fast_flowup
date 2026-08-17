@@ -46,5 +46,10 @@ public sealed class ColaboradorQueryTests
 
             return Task.FromResult(new PagedColaboradores(page, matches.Length, query.Offset, query.Limit));
         }
+
+        public Task<ColaboradorResponse?> GetAsync(int id, bool includeArchived, CancellationToken cancellationToken) =>
+            Task.FromResult(_items.FirstOrDefault(item => item.Id == id && (includeArchived || item.ArchivedAt is null)) is { } item
+                ? ColaboradorResponse.FromDomain(item)
+                : null);
     }
 }

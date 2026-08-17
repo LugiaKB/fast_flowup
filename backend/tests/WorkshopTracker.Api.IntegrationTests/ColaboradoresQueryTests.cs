@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using WorkshopTracker.Domain.Colaboradores;
 
 namespace WorkshopTracker.Api.IntegrationTests;
@@ -48,6 +50,36 @@ public sealed class ColaboradoresQueryTests : IClassFixture<TestWebApplicationFa
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Archived_filter_requires_authentication_and_returns_archived_collaborators_to_the_administrator()
+    {
+        var archived = Colaborador.Create("Ana arquivada", DateTimeOffset.UtcNow);
+        archived.Archive(DateTimeOffset.UtcNow);
+        await _factory.ResetDatabaseAsync([archived]);
+        using var visitor = _factory.CreateClient();
+
+        var unauthorized = await visitor.GetAsync("/api/colaboradores?status=archived");
+
+        await _factory.CreateAdministratorAsync();
+        using var admin = await AdminClientAsync();
+        var authorized = await admin.GetAsync("/api/colaboradores?status=archived");
+        var body = await authorized.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.Unauthorized, unauthorized.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, authorized.StatusCode);
+        Assert.Contains("Ana arquivada", body);
+        Assert.Contains("archived", body);
+    }
+
+    private async Task<HttpClient> AdminClientAsync()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.PostAsJsonAsync("/api/auth/login", new { username = "administrator", password = "StrongPassword123" });
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", body.RootElement.GetProperty("accessToken").GetString());
+        return client;
     }
 
     private sealed record PagedColaboradoresResponse(

@@ -11,7 +11,9 @@ public sealed class EfWorkshopReadRepository(WorkshopTrackerDbContext database) 
     {
         var filtered = database.Workshops
             .AsNoTracking()
-            .Where(workshop => workshop.ArchivedAt == null)
+            .Where(workshop => query.Status == "all"
+                || (query.Status == "active" && workshop.ArchivedAt == null)
+                || (query.Status == "archived" && workshop.ArchivedAt != null))
             .Where(workshop => EF.Functions.Like(workshop.Nome, $"%{query.Query}%"));
         var totalItems = await filtered.CountAsync(cancellationToken);
         var items = await filtered
@@ -24,22 +26,36 @@ public sealed class EfWorkshopReadRepository(WorkshopTrackerDbContext database) 
                 workshop.Nome,
                 workshop.DataRealizacao,
                 workshop.Descricao,
-                "active",
-                null,
+                workshop.ArchivedAt == null ? "active" : "archived",
+                workshop.ArchivedAt,
                 workshop.Participacoes.Count(participation => participation.Colaborador.ArchivedAt == null)))
             .ToListAsync(cancellationToken);
 
         return new PagedWorkshops(items, totalItems, query.Offset, query.Limit);
     }
 
-    public async Task<WorkshopDetailResponse?> GetActiveAsync(int id, CancellationToken cancellationToken)
+    public async Task<WorkshopDetailResponse?> GetAsync(int id, bool includeArchived, bool includeArchiveHistory, CancellationToken cancellationToken)
     {
         var workshop = await database.Workshops
             .AsNoTracking()
             .Include(item => item.Participacoes)
             .ThenInclude(item => item.Colaborador)
-            .SingleOrDefaultAsync(item => item.Id == id && item.ArchivedAt == null, cancellationToken);
+            .SingleOrDefaultAsync(item => item.Id == id && (includeArchived || item.ArchivedAt == null), cancellationToken);
 
-        return workshop is null ? null : WorkshopDetailResponse.FromDomain(workshop);
+        if (workshop is null) return null;
+        var archiveEvents = includeArchiveHistory
+            ? await database.WorkshopArchiveEvents.AsNoTracking()
+                .Where(item => item.WorkshopId == id)
+                .OrderBy(item => item.Id)
+                .Select(item => new WorkshopArchiveEventResponse(
+                    item.Id,
+                    item.Reason == WorkshopTracker.Domain.Workshops.WorkshopArchiveReason.Manual ? "manual" : "replacement",
+                    item.ArchivedAt,
+                    item.ArchivedByAdminId,
+                    item.RestoredAt,
+                    item.ReplacementWorkshopId))
+                .ToListAsync(cancellationToken)
+            : [];
+        return WorkshopDetailResponse.FromDomain(workshop, archiveEvents);
     }
 }

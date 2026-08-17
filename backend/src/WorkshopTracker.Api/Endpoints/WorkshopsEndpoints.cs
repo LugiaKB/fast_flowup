@@ -11,6 +11,7 @@ public static class WorkshopsEndpoints
     {
         endpoints.MapGet("/api/workshops", async (
             HttpRequest request,
+            ClaimsPrincipal user,
             ListWorkshopsUseCase useCase,
             CancellationToken cancellationToken) =>
         {
@@ -20,7 +21,12 @@ public static class WorkshopsEndpoints
                 return Results.ValidationProblem(errors);
             }
 
-            return Results.Ok(await useCase.ExecuteAsync(query!, cancellationToken));
+            if (query!.Status != "active" && user.Identity?.IsAuthenticated != true)
+            {
+                return Unauthorized();
+            }
+
+            return Results.Ok(await useCase.ExecuteAsync(query, cancellationToken));
         })
         .WithName("listWorkshops")
         .WithTags("Workshops")
@@ -28,7 +34,7 @@ public static class WorkshopsEndpoints
         .ProducesValidationProblem();
 
         endpoints.MapPost("/api/workshops", async (CreateWorkshopRequest request, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
-            ToCommandResult(await ExecuteAsync(() => useCase.CreateAsync(request.Nome, request.DataRealizacao, request.Descricao, request.ColaboradorIds, cancellationToken)), true))
+            ToCommandResult(await ExecuteAsync(() => useCase.CreateAsync(request.Nome, request.DataRealizacao, request.Descricao, request.ColaboradorIds, request.SubstituiWorkshopId, cancellationToken)), true))
         .WithName("createWorkshop")
         .WithTags("Workshops")
         .RequireAuthorization()
@@ -38,6 +44,7 @@ public static class WorkshopsEndpoints
 
         endpoints.MapGet("/api/workshops/{id:int}", async (
             int id,
+            ClaimsPrincipal user,
             GetWorkshopUseCase useCase,
             CancellationToken cancellationToken) =>
         {
@@ -46,7 +53,7 @@ public static class WorkshopsEndpoints
                 return Results.ValidationProblem(new Dictionary<string, string[]> { ["id"] = ["O identificador deve ser positivo."] });
             }
 
-            var workshop = await useCase.ExecuteAsync(id, cancellationToken);
+            var workshop = await useCase.ExecuteAsync(id, user.Identity?.IsAuthenticated == true, cancellationToken);
             return workshop is null
                 ? Results.Problem(
                     statusCode: StatusCodes.Status404NotFound,
@@ -68,13 +75,13 @@ public static class WorkshopsEndpoints
         .RequireAuthorization();
 
         endpoints.MapDelete("/api/workshops/{id:int}", async (int id, [FromBody] ArchiveWorkshopRequest request, ClaimsPrincipal user, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
-            await useCase.ArchiveAsync(id, request.Reason, user.FindFirstValue(ClaimTypes.NameIdentifier)!, request.SubstituiWorkshopId, cancellationToken) ? Results.NoContent() : NotFound())
+            await useCase.ArchiveAsync(id, request.Reason, user.FindFirstValue(ClaimTypes.NameIdentifier)!, cancellationToken) ? Results.NoContent() : NotFound())
         .WithName("archiveWorkshop")
         .WithTags("Workshops")
         .RequireAuthorization();
 
-        endpoints.MapPost("/api/workshops/{id:int}/restaurar", async (int id, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
-            ToCommandResult(await useCase.RestoreAsync(id, cancellationToken), false))
+        endpoints.MapPost("/api/workshops/{id:int}/restaurar", async (int id, ClaimsPrincipal user, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
+            ToCommandResult(await useCase.RestoreAsync(id, user.FindFirstValue(ClaimTypes.NameIdentifier)!, cancellationToken), false))
         .WithName("restoreWorkshop")
         .WithTags("Workshops")
         .RequireAuthorization();
@@ -95,7 +102,10 @@ public static class WorkshopsEndpoints
         .RequireAuthorization();
 
         endpoints.MapDelete("/api/workshops/{id:int}/participantes/{colaboradorId:int}", async (int id, int colaboradorId, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
-            await useCase.RemoveParticipantAsync(id, colaboradorId, cancellationToken) ? Results.NoContent() : NotFound())
+        {
+            var result = await useCase.RemoveParticipantAsync(id, colaboradorId, cancellationToken);
+            return result.Error is null ? Results.NoContent() : ToCommandResult(result, false);
+        })
         .WithName("removeParticipante")
         .WithTags("Participantes")
         .RequireAuthorization();
@@ -108,6 +118,8 @@ public static class WorkshopsEndpoints
         query = null;
         var errors = new Dictionary<string, string[]>();
         var search = values["query"].ToString().Trim();
+        var status = values["status"].ToString();
+        if (string.IsNullOrEmpty(status)) status = "active";
         if (search.Length > 200)
         {
             errors["query"] = ["A busca deve ter no máximo 200 caracteres."];
@@ -123,9 +135,14 @@ public static class WorkshopsEndpoints
             errors["limit"] = ["O limite deve estar entre 1 e 100."];
         }
 
+        if (status is not ("active" or "archived" or "all"))
+        {
+            errors["status"] = ["O status deve ser active, archived ou all."];
+        }
+
         if (errors.Count == 0)
         {
-            query = new ListWorkshopsQuery(search, offset, limit);
+            query = new ListWorkshopsQuery(search, offset, limit, status);
         }
 
         return errors;
@@ -154,13 +171,22 @@ public static class WorkshopsEndpoints
         null => Results.Ok(WorkshopDetailResponse.FromDomain(result.Workshop!)),
         "not_found" => NotFound(),
         "quarter_conflict" => Results.Problem(statusCode: StatusCodes.Status409Conflict, title: "Já existe um workshop ativo neste trimestre.", extensions: new Dictionary<string, object?> { ["code"] = "quarter_conflict" }),
-        _ => Results.ValidationProblem(new Dictionary<string, string[]> { ["colaboradorIds"] = ["Os participantes devem ser colaboradores ativos e não duplicados."] }),
+        "collaborator_not_found" => Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Colaborador não encontrado", extensions: new Dictionary<string, object?> { ["code"] = "collaborator_not_found" }),
+        "inactive_collaborator" => Results.Problem(statusCode: StatusCodes.Status409Conflict, title: "Todos os participantes devem estar ativos", extensions: new Dictionary<string, object?> { ["code"] = "inactive_collaborator" }),
+        "workshop_archived" => Results.Problem(statusCode: StatusCodes.Status409Conflict, title: "Workshop arquivado não aceita alterações", extensions: new Dictionary<string, object?> { ["code"] = "workshop_archived" }),
+        "invalid_replacement" => Results.Problem(statusCode: StatusCodes.Status409Conflict, title: "Workshop substituído inválido", extensions: new Dictionary<string, object?> { ["code"] = "invalid_replacement" }),
+        _ => Results.ValidationProblem(new Dictionary<string, string[]> { ["colaboradorIds"] = ["A lista de participantes é inválida."] }),
     };
 
     private static IResult NotFound() => Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Workshop não encontrado", extensions: new Dictionary<string, object?> { ["code"] = "workshop_not_found" });
 
+    private static IResult Unauthorized() => Results.Problem(
+        statusCode: StatusCodes.Status401Unauthorized,
+        title: "Autenticação administrativa necessária",
+        extensions: new Dictionary<string, object?> { ["code"] = "unauthorized" });
+
     public sealed record WorkshopInput(string Nome, DateTimeOffset DataRealizacao, string Descricao);
-    public sealed record CreateWorkshopRequest(string Nome, DateTimeOffset DataRealizacao, string Descricao, IReadOnlyCollection<int>? ColaboradorIds);
+    public sealed record CreateWorkshopRequest(string Nome, DateTimeOffset DataRealizacao, string Descricao, IReadOnlyCollection<int>? ColaboradorIds, int? SubstituiWorkshopId);
     public sealed record ReplaceParticipantesRequest(IReadOnlyCollection<int> ColaboradorIds);
-    public sealed record ArchiveWorkshopRequest(WorkshopArchiveReason Reason, int? SubstituiWorkshopId);
+    public sealed record ArchiveWorkshopRequest(WorkshopArchiveReason Reason);
 }

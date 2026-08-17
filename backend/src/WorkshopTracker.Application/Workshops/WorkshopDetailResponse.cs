@@ -11,12 +11,12 @@ public sealed record WorkshopDetailResponse(
     string Status,
     DateTimeOffset? ArchivedAt,
     int ParticipantCount,
-    IReadOnlyList<ColaboradorResponse> Participantes)
+    IReadOnlyList<ColaboradorResponse> Participantes,
+    IReadOnlyList<WorkshopArchiveEventResponse> ArchiveEvents)
 {
     public DateTimeOffset DataTermino => DataRealizacao.AddHours(1);
-    public IReadOnlyList<object> ArchiveEvents => [];
 
-    public static WorkshopDetailResponse FromDomain(Workshop workshop)
+    public static WorkshopDetailResponse FromDomain(Workshop workshop, IReadOnlyList<WorkshopArchiveEventResponse>? archiveEvents = null)
     {
         var participants = workshop.Participacoes
             .Select(item => item.Colaborador)
@@ -34,6 +34,15 @@ public sealed record WorkshopDetailResponse(
             summary.Status,
             summary.ArchivedAt,
             participants.Length,
-            participants);
+            participants,
+            archiveEvents ?? []);
     }
 }
+
+public sealed record WorkshopArchiveEventResponse(
+    int Id,
+    string Reason,
+    DateTimeOffset ArchivedAt,
+    string ArchivedByAdminId,
+    DateTimeOffset? RestoredAt,
+    int? ReplacementWorkshopId);

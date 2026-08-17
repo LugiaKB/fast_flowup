@@ -262,21 +262,21 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 
 ## Phase 14: Backend User Story 5 - Administrar workshops
 
-- [ ] T074 [P] [US5] Write failing quarter, archive and replacement domain tests in `backend/tests/WorkshopTracker.Domain.Tests/WorkshopLifecycleTests.cs`
-- [ ] T075 [P] [US5] Write failing workshop command HTTP tests including atomic creation with unique active participant IDs, archived IDs and unauthorized callers in `backend/tests/WorkshopTracker.Api.IntegrationTests/WorkshopsCommandTests.cs`
-- [ ] T076 [US5] Implement Recife schedule and lifecycle rules in `backend/src/WorkshopTracker.Domain/Workshops/Workshop.cs`
-- [ ] T077 [US5] Implement WorkshopArchiveEvent and transactional create/update use cases, including initial active attendance validation, in `backend/src/WorkshopTracker.Application/Workshops/Commands/`
-- [ ] T078 [US5] Map archive history and create provider migrations in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
-- [ ] T079 [US5] Add authenticated workshop mutations accepting contract-defined initial participant IDs to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs`
+- [X] T074 [P] [US5] Write failing quarter, archive and replacement domain tests in `backend/tests/WorkshopTracker.Domain.Tests/WorkshopLifecycleTests.cs`
+- [X] T075 [P] [US5] Write failing workshop command HTTP tests including atomic creation with unique active participant IDs, archived IDs and unauthorized callers in `backend/tests/WorkshopTracker.Api.IntegrationTests/WorkshopsCommandTests.cs`
+- [X] T076 [US5] Implement Recife schedule and lifecycle rules in `backend/src/WorkshopTracker.Domain/Workshops/Workshop.cs`
+- [X] T077 [US5] Implement WorkshopArchiveEvent and transactional create/update use cases, including initial active attendance validation, in `backend/src/WorkshopTracker.Application/Workshops/`
+- [X] T078 [US5] Map archive history and create provider migrations in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
+- [X] T079 [US5] Add authenticated workshop mutations accepting contract-defined initial participant IDs to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs`
 
 ---
 
 ## Phase 15: Backend User Story 6 - Registrar participações
 
-- [ ] T080 [P] [US6] Write failing attendance use-case tests for atomic replacement, active-record validation and duplicate prevention in `backend/tests/WorkshopTracker.Application.Tests/AttendanceCommandTests.cs`
-- [ ] T081 [P] [US6] Write failing HTTP tests for bulk replacement and idempotent individual add/remove using the existing OpenAPI paths in `backend/tests/WorkshopTracker.Api.IntegrationTests/AttendanceTests.cs`
-- [ ] T082 [US6] Implement atomic bulk and idempotent individual attendance commands that preserve state on failure in `backend/src/WorkshopTracker.Application/Workshops/Attendance/`
-- [ ] T083 [US6] Add the existing authenticated attendance contract paths to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs` without introducing search-specific attendance endpoints
+- [X] T080 [P] [US6] Write failing attendance use-case tests for atomic replacement, active-record validation and duplicate prevention in `backend/tests/WorkshopTracker.Application.Tests/AttendanceCommandTests.cs`
+- [X] T081 [P] [US6] Write failing HTTP tests for bulk replacement and idempotent individual add/remove using the existing OpenAPI paths in `backend/tests/WorkshopTracker.Api.IntegrationTests/AttendanceTests.cs`
+- [X] T082 [US6] Implement atomic bulk and idempotent individual attendance commands that preserve state on failure in `backend/src/WorkshopTracker.Application/Workshops/`
+- [X] T083 [US6] Add the existing authenticated attendance contract paths to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs` without introducing search-specific attendance endpoints
 
 **Checkpoint**: Backend contract, domain and SQLite integration suites pass for US1-US6.
 

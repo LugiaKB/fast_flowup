@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var frontendOrigin = builder.Configuration["FrontendOrigin"]
@@ -20,6 +22,8 @@ builder.Configuration["JWT_SIGNING_KEY"] = signingKey;
 
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication();

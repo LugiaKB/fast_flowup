@@ -27,7 +27,7 @@ public sealed class WorkshopQueryTests
         public Task<PagedWorkshops> ListActiveAsync(ListWorkshopsQuery query, CancellationToken cancellationToken) =>
             Task.FromResult(result);
 
-        public Task<WorkshopDetailResponse?> GetActiveAsync(int id, CancellationToken cancellationToken) =>
+        public Task<WorkshopDetailResponse?> GetAsync(int id, bool includeArchived, bool includeArchiveHistory, CancellationToken cancellationToken) =>
             Task.FromResult<WorkshopDetailResponse?>(null);
     }
 }

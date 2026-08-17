@@ -102,6 +102,14 @@ public sealed class Workshop
         UpdatedAt = now.ToUniversalTime();
     }
 
+    public bool OccursInSameLocalQuarter(DateTimeOffset otherSchedule)
+    {
+        var timezone = TimeZoneInfo.FindSystemTimeZoneById("America/Recife");
+        var current = TimeZoneInfo.ConvertTime(DataRealizacao, timezone);
+        var other = TimeZoneInfo.ConvertTime(otherSchedule, timezone);
+        return current.Year == other.Year && (current.Month - 1) / 3 == (other.Month - 1) / 3;
+    }
+
     private static void ValidateSchedule(DateTimeOffset scheduledAt)
     {
         var timezone = TimeZoneInfo.FindSystemTimeZoneById("America/Recife");

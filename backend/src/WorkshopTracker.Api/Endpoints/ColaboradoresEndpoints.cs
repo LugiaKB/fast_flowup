@@ -1,4 +1,5 @@
 using WorkshopTracker.Application.Colaboradores;
+using System.Security.Claims;
 
 namespace WorkshopTracker.Api.Endpoints;
 
@@ -8,6 +9,7 @@ public static class ColaboradoresEndpoints
     {
         endpoints.MapGet("/api/colaboradores", async (
             HttpRequest request,
+            ClaimsPrincipal user,
             ListColaboradoresUseCase useCase,
             CancellationToken cancellationToken) =>
         {
@@ -17,13 +19,34 @@ public static class ColaboradoresEndpoints
                 return Results.ValidationProblem(validationErrors);
             }
 
-            var result = await useCase.ExecuteAsync(query!, cancellationToken);
+            if (query!.Status != "active" && user.Identity?.IsAuthenticated != true)
+            {
+                return Unauthorized();
+            }
+
+            var result = await useCase.ExecuteAsync(query, cancellationToken);
             return Results.Ok(result);
         })
         .WithName("listColaboradores")
         .WithTags("Colaboradores")
         .Produces<PagedColaboradores>()
         .ProducesValidationProblem();
+
+        endpoints.MapGet("/api/colaboradores/{id:int}", async (
+            int id,
+            ClaimsPrincipal user,
+            GetColaboradorUseCase useCase,
+            CancellationToken cancellationToken) =>
+        {
+            var collaborator = await useCase.ExecuteAsync(id, user.Identity?.IsAuthenticated == true, cancellationToken);
+            return collaborator is null
+                ? Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Colaborador não encontrado", extensions: new Dictionary<string, object?> { ["code"] = "collaborator_not_found" })
+                : Results.Ok(collaborator);
+        })
+        .WithName("getColaborador")
+        .WithTags("Colaboradores")
+        .Produces<ColaboradorResponse>()
+        .Produces(StatusCodes.Status404NotFound);
 
         endpoints.MapPost("/api/colaboradores", async (
             ColaboradorInput input,
@@ -92,6 +115,8 @@ public static class ColaboradoresEndpoints
         query = null;
         var errors = new Dictionary<string, string[]>();
         var search = values["query"].ToString().Trim();
+        var status = values["status"].ToString();
+        if (string.IsNullOrEmpty(status)) status = "active";
         if (search.Length > 200)
         {
             errors["query"] = ["A busca deve ter no máximo 200 caracteres."];
@@ -107,9 +132,14 @@ public static class ColaboradoresEndpoints
             errors["limit"] = ["O limite deve estar entre 1 e 100."];
         }
 
+        if (status is not ("active" or "archived" or "all"))
+        {
+            errors["status"] = ["O status deve ser active, archived ou all."];
+        }
+
         if (errors.Count == 0)
         {
-            query = new ListColaboradoresQuery(search, offset, limit);
+            query = new ListColaboradoresQuery(search, offset, limit, status);
         }
 
         return errors;
@@ -143,6 +173,11 @@ public static class ColaboradoresEndpoints
     {
         ["nome"] = ["O nome do colaborador deve ter entre 1 e 160 caracteres."],
     });
+
+    private static IResult Unauthorized() => Results.Problem(
+        statusCode: StatusCodes.Status401Unauthorized,
+        title: "Autenticação administrativa necessária",
+        extensions: new Dictionary<string, object?> { ["code"] = "unauthorized" });
 
     public sealed record ColaboradorInput(string Nome);
 }

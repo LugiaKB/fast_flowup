@@ -11,7 +11,9 @@ public sealed class EfColaboradorReadRepository(WorkshopTrackerDbContext databas
     {
         var filtered = database.Colaboradores
             .AsNoTracking()
-            .Where(collaborator => collaborator.ArchivedAt == null)
+            .Where(collaborator => query.Status == "all"
+                || (query.Status == "active" && collaborator.ArchivedAt == null)
+                || (query.Status == "archived" && collaborator.ArchivedAt != null))
             .Where(collaborator => EF.Functions.Like(collaborator.Nome, $"%{EscapeLike(query.Query)}%"));
         var totalItems = await filtered.CountAsync(cancellationToken);
         var items = await filtered
@@ -22,13 +24,20 @@ public sealed class EfColaboradorReadRepository(WorkshopTrackerDbContext databas
             .Select(collaborator => new ColaboradorResponse(
                 collaborator.Id,
                 collaborator.Nome,
-                "active",
-                null,
+                collaborator.ArchivedAt == null ? "active" : "archived",
+                collaborator.ArchivedAt,
                 collaborator.CreatedAt,
                 collaborator.UpdatedAt))
             .ToListAsync(cancellationToken);
 
         return new PagedColaboradores(items, totalItems, query.Offset, query.Limit);
+    }
+
+    public async Task<ColaboradorResponse?> GetAsync(int id, bool includeArchived, CancellationToken cancellationToken)
+    {
+        var collaborator = await database.Colaboradores.AsNoTracking()
+            .SingleOrDefaultAsync(item => item.Id == id && (includeArchived || item.ArchivedAt == null), cancellationToken);
+        return collaborator is null ? null : ColaboradorResponse.FromDomain(collaborator);
     }
 
     private static string EscapeLike(string value) => value

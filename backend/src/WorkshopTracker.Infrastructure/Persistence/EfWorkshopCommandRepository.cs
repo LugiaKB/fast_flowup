@@ -14,8 +14,8 @@ public sealed class EfWorkshopCommandRepository(WorkshopTrackerDbContext databas
         database.Workshops.Include(item => item.Participacoes).ThenInclude(item => item.Colaborador)
             .SingleOrDefaultAsync(item => item.Id == id, cancellationToken);
 
-    public async Task<IReadOnlyList<Colaborador>> FindActiveCollaboratorsAsync(IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default) =>
-        await database.Colaboradores.Where(item => ids.Contains(item.Id) && item.ArchivedAt == null).ToListAsync(cancellationToken);
+    public async Task<IReadOnlyList<Colaborador>> FindCollaboratorsAsync(IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default) =>
+        await database.Colaboradores.Where(item => ids.Contains(item.Id)).ToListAsync(cancellationToken);
 
     public async Task<bool> HasActiveWorkshopInQuarterAsync(DateTimeOffset scheduledAt, int? excludingWorkshopId, CancellationToken cancellationToken = default)
     {
@@ -34,12 +34,28 @@ public sealed class EfWorkshopCommandRepository(WorkshopTrackerDbContext databas
     public Task AddArchiveEventAsync(WorkshopArchiveEvent archiveEvent, CancellationToken cancellationToken = default) =>
         database.WorkshopArchiveEvents.AddAsync(archiveEvent, cancellationToken).AsTask();
 
-    public async Task MarkLatestArchiveEventRestoredAsync(int workshopId, DateTimeOffset restoredAt, CancellationToken cancellationToken = default)
+    public Task<WorkshopArchiveEvent?> FindLatestOpenArchiveEventAsync(int workshopId, CancellationToken cancellationToken = default) =>
+        database.WorkshopArchiveEvents
+            .Where(item => item.WorkshopId == workshopId && item.RestoredAt == null)
+            .OrderByDescending(item => item.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+    public async Task AddReplacementAsync(Workshop workshop, WorkshopArchiveEvent predecessorEvent, CancellationToken cancellationToken = default)
+    {
+        await using var transaction = await database.Database.BeginTransactionAsync(cancellationToken);
+        database.Workshops.Add(workshop);
+        await database.SaveChangesAsync(cancellationToken);
+        predecessorEvent.AssignReplacement(workshop.Id);
+        await database.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+    }
+
+    public async Task MarkLatestArchiveEventRestoredAsync(int workshopId, string administratorId, DateTimeOffset restoredAt, CancellationToken cancellationToken = default)
     {
         var archiveEvent = await database.WorkshopArchiveEvents
             .Where(item => item.WorkshopId == workshopId && item.RestoredAt == null)
-            .OrderByDescending(item => item.ArchivedAt)
+            .OrderByDescending(item => item.Id)
             .FirstOrDefaultAsync(cancellationToken);
-        archiveEvent?.MarkRestored(restoredAt);
+        archiveEvent?.MarkRestored(administratorId, restoredAt);
     }
 }

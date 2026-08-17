@@ -1,4 +1,7 @@
 using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 using WorkshopTracker.Domain.Colaboradores;
 using WorkshopTracker.Domain.Workshops;
 
@@ -55,5 +58,37 @@ public sealed class WorkshopsQueryTests : IClassFixture<TestWebApplicationFactor
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task Archived_workshop_is_hidden_from_visitors_and_visible_to_the_administrator()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var workshop = Workshop.Create("Arquivado", new DateTimeOffset(2026, 8, 20, 16, 0, 0, TimeSpan.FromHours(-3)), "Teste", now);
+        workshop.Archive(now);
+        await _factory.ResetDatabaseAsync([], [workshop]);
+        using var visitor = _factory.CreateClient();
+
+        var publicDetail = await visitor.GetAsync($"/api/workshops/{workshop.Id}");
+        var publicList = await visitor.GetAsync("/api/workshops?status=archived");
+
+        await _factory.CreateAdministratorAsync();
+        using var admin = await AdminClientAsync();
+        var adminDetail = await admin.GetAsync($"/api/workshops/{workshop.Id}");
+        var adminList = await admin.GetStringAsync("/api/workshops?status=archived");
+
+        Assert.Equal(HttpStatusCode.NotFound, publicDetail.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, publicList.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, adminDetail.StatusCode);
+        Assert.Contains("Arquivado", adminList);
+    }
+
+    private async Task<HttpClient> AdminClientAsync()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.PostAsJsonAsync("/api/auth/login", new { username = "administrator", password = "StrongPassword123" });
+        using var body = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", body.RootElement.GetProperty("accessToken").GetString());
+        return client;
     }
 }

@@ -65,7 +65,24 @@ public sealed class WorkshopTrackerDbContext(DbContextOptions<WorkshopTrackerDbC
         archiveEvent.ToTable("WorkshopArchiveEvents");
         archiveEvent.HasKey(item => item.Id);
         archiveEvent.Property(item => item.ArchivedByAdminId).HasMaxLength(450).IsRequired();
+        archiveEvent.Property(item => item.RestoredByAdminId).HasMaxLength(450);
         archiveEvent.Property(item => item.Reason).HasConversion<string>().HasMaxLength(32).IsRequired();
         archiveEvent.HasIndex(item => item.WorkshopId);
+        archiveEvent.HasOne<Workshop>()
+            .WithMany()
+            .HasForeignKey(item => item.WorkshopId)
+            .OnDelete(DeleteBehavior.Restrict);
+        archiveEvent.HasOne<Workshop>()
+            .WithMany()
+            .HasForeignKey(item => item.ReplacementWorkshopId)
+            .OnDelete(DeleteBehavior.Restrict);
+        archiveEvent.HasOne<Administrator>()
+            .WithMany()
+            .HasForeignKey(item => item.ArchivedByAdminId)
+            .OnDelete(DeleteBehavior.Restrict);
+        archiveEvent.HasOne<Administrator>()
+            .WithMany()
+            .HasForeignKey(item => item.RestoredByAdminId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
