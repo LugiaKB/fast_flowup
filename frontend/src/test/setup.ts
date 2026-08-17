@@ -8,6 +8,14 @@ import { server } from "@/mocks/server";
 
 expect.extend(toHaveNoViolations);
 
+if (!Element.prototype.hasPointerCapture) {
+  Object.defineProperties(Element.prototype, {
+    hasPointerCapture: { value: () => false },
+    setPointerCapture: { value: () => undefined },
+    releasePointerCapture: { value: () => undefined },
+  });
+}
+
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 afterEach(() => {
