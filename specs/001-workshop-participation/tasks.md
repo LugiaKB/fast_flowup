@@ -25,7 +25,7 @@ only transport configuration.
 - [X] T004 Generate TypeScript schemas from OpenAPI into `frontend/src/lib/api/schema.d.ts` and add its script to `frontend/package.json`
 - [X] T005 Implement fetch client, Problem Details mapping and abort support in `frontend/src/lib/api/client.ts`
 - [X] T006 Add deterministic fixtures and MSW browser/test bootstrap in `frontend/src/mocks/` and `frontend/src/test/setup.ts`
-- [ ] T007 Map design tokens, Poppins/Inter fonts and reduced-motion rules in `frontend/src/app/globals.css` and `frontend/src/app/layout.tsx`
+- [X] T007 Map design tokens, Poppins/Inter fonts and reduced-motion rules in `frontend/src/app/globals.css` and `frontend/src/app/layout.tsx`
 - [ ] T008 Implement accessible shared UI primitives in `frontend/src/components/ui/`
 - [ ] T009 Implement responsive header, navigation and application providers in `frontend/src/components/layout/` and `frontend/src/app/providers.tsx`
 
