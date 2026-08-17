@@ -4,8 +4,10 @@ import { ArrowLeft, CalendarDays, Clock3 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-import { Card, EmptyState, ErrorState, LoadingState } from "@/components/ui";
+import { Badge, Card, EmptyState, ErrorState, LoadingState } from "@/components/ui";
+import { useAuth } from "@/features/auth/auth-provider";
 import { formatWorkshopDate, formatWorkshopTimeRange } from "@/features/workshops/format-workshop";
+import { WorkshopManagement } from "@/features/workshops/workshop-management";
 import { useWorkshop } from "@/features/workshops/use-workshops";
 import { ApiError } from "@/lib/api/client";
 
@@ -13,7 +15,9 @@ export default function WorkshopDetailPage() {
   const { id: routeId } = useParams<{ id: string }>();
   const parsedId = Number(routeId);
   const id = Number.isInteger(parsedId) && parsedId > 0 ? parsedId : null;
-  const { data, error, isLoading, refetch } = useWorkshop(id);
+  const { request, status } = useAuth();
+  const isAdmin = status === "authenticated";
+  const { data, error, isLoading, refetch } = useWorkshop(id, isAdmin ? request : undefined);
   const notFound = id === null || (error instanceof ApiError && error.status === 404);
 
   return (
@@ -45,8 +49,16 @@ export default function WorkshopDetailPage() {
         )}
         {!isLoading && !error && data && (
           <article>
-            <div className="max-w-3xl">
-              <h1 className="text-3xl font-bold sm:text-4xl">{data.nome}</h1>
+            <div className="flex max-w-4xl flex-col items-start justify-between gap-6 sm:flex-row">
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h1 className="text-3xl font-bold sm:text-4xl">{data.nome}</h1>
+                  {isAdmin && (
+                    <Badge tone={data.status === "active" ? "success" : "warning"}>
+                      {data.status === "active" ? "Ativo" : "Arquivado"}
+                    </Badge>
+                  )}
+                </div>
               <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-gray-700">
                 <p className="flex items-center gap-2">
                   <CalendarDays aria-hidden="true" className="size-5 text-primary" />
@@ -57,6 +69,14 @@ export default function WorkshopDetailPage() {
                   {formatWorkshopTimeRange(data.dataRealizacao, data.dataTermino)}
                 </p>
               </div>
+              </div>
+              {isAdmin && (
+                <WorkshopManagement
+                  workshop={data}
+                  activeWorkshops={data.status === "active" ? [data] : []}
+                  onChanged={refetch}
+                />
+              )}
             </div>
 
             <section aria-labelledby="workshop-description" className="mt-10 max-w-3xl">

@@ -11,9 +11,11 @@ export interface ConfirmDialogProps {
   description: string;
   confirmLabel: string;
   onConfirm: () => void;
+  children?: ReactNode;
 }
 
 export function ConfirmDialog({
+  children,
   confirmLabel,
   description,
   onConfirm,
@@ -32,6 +34,7 @@ export function ConfirmDialog({
           <AlertDialog.Description className="mt-3 text-gray-700">
             {description}
           </AlertDialog.Description>
+          {children}
           <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <AlertDialog.Cancel asChild>
               <Button variant="secondary">Cancelar</Button>

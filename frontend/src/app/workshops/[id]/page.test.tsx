@@ -7,6 +7,15 @@ import WorkshopDetailPage from "./page";
 const route = vi.hoisted(() => ({ id: "1" }));
 
 vi.mock("next/navigation", () => ({ useParams: () => ({ id: route.id }) }));
+vi.mock("@/features/auth/auth-provider", () => ({
+  useAuth: () => ({
+    admin: undefined,
+    login: vi.fn(),
+    logout: vi.fn(),
+    request: vi.fn(),
+    status: "visitor",
+  }),
+}));
 
 beforeEach(() => {
   route.id = "1";

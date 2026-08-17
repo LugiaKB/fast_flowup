@@ -5,6 +5,7 @@ import { toHaveNoViolations } from "jest-axe";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 
 import { resetColaboradoresMockState } from "@/mocks/data/colaboradores";
+import { resetWorkshopsMockState } from "@/mocks/data/workshops";
 import { resetAuthMockState } from "@/mocks/handlers/auth";
 import { server } from "@/mocks/server";
 
@@ -25,6 +26,7 @@ afterEach(() => {
   server.resetHandlers();
   resetAuthMockState();
   resetColaboradoresMockState();
+  resetWorkshopsMockState();
 });
 
 afterAll(() => server.close());

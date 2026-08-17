@@ -5,6 +5,16 @@ import { afterEach, beforeEach, vi } from "vitest";
 
 import WorkshopsPage from "./page";
 
+vi.mock("@/features/auth/auth-provider", () => ({
+  useAuth: () => ({
+    admin: undefined,
+    login: vi.fn(),
+    logout: vi.fn(),
+    request: vi.fn(),
+    status: "visitor",
+  }),
+}));
+
 beforeEach(() => {
   vi.stubEnv("NEXT_PUBLIC_API_URL", "http://api.test");
 });

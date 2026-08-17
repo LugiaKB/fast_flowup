@@ -104,12 +104,12 @@ only transport configuration.
 
 **Independent Test**: Create a valid workshop, reject invalid schedules, archive, replace and test restore conflict.
 
-- [ ] T031 [P] [US5] Write failing local schedule validation tests in `frontend/src/features/workshops/workshop-validation.test.ts`
-- [ ] T032 [P] [US5] Write failing workshop management tests in `frontend/src/features/workshops/workshop-management.test.tsx`
-- [ ] T033 [US5] Extend workshop MSW handlers for lifecycle and conflicts in `frontend/src/mocks/handlers/workshops.ts`
-- [ ] T034 [US5] Implement America/Recife schedule validation in `frontend/src/features/workshops/workshop-validation.ts`
-- [ ] T035 [US5] Implement workshop mutation hooks in `frontend/src/features/workshops/use-workshop-mutations.ts`
-- [ ] T036 [US5] Implement workshop sheet, archive dialog and replacement flow in `frontend/src/features/workshops/workshop-management.tsx`
+- [X] T031 [P] [US5] Write failing local schedule validation tests in `frontend/src/features/workshops/workshop-validation.test.ts`
+- [X] T032 [P] [US5] Write failing workshop management tests in `frontend/src/features/workshops/workshop-management.test.tsx`
+- [X] T033 [US5] Extend workshop MSW handlers for lifecycle and conflicts in `frontend/src/mocks/handlers/workshops.ts`
+- [X] T034 [US5] Implement America/Recife schedule validation in `frontend/src/features/workshops/workshop-validation.ts`
+- [X] T035 [US5] Implement workshop mutation hooks in `frontend/src/features/workshops/use-workshop-mutations.ts`
+- [X] T036 [US5] Implement workshop sheet, archive dialog and replacement flow in `frontend/src/features/workshops/workshop-management.tsx`
 
 **Checkpoint**: US5 passes schedule, quarter, archive history and restore-conflict scenarios.
 
