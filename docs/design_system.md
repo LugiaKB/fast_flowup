@@ -56,6 +56,38 @@ Este design system combina elementos modernos de SaaS (FlowUp) com a solidez cor
 | **Fundo secao** | --gray-700 | --white |
 | **Bordas** | --gray-200 | --white |
 
+### Temas e tokens semanticos
+
+Os valores da paleta permanecem como referencia, mas componentes devem consumir tokens semanticos para
+evitar acoplamento ao tema claro:
+
+```css
+:root {
+  --canvas: #F9FAFB;
+  --surface: #FFFFFF;
+  --surface-subtle: #F3F4F6;
+  --text-strong: #111827;
+  --text-body: #374151;
+  --text-muted: #4B5563;
+  --border-default: #D1D5DB;
+}
+
+[data-theme="dark"] {
+  --canvas: #0B1020;
+  --surface: #151B2E;
+  --surface-subtle: #1D263D;
+  --text-strong: #F9FAFB;
+  --text-body: #E5E7EB;
+  --text-muted: #CBD5E1;
+  --border-default: #475569;
+}
+```
+
+- A preferencia inicial segue `prefers-color-scheme` quando nao existe escolha salva.
+- A escolha manual claro/escuro persiste no navegador e prevalece sobre o sistema.
+- O atributo `data-theme` deve ser aplicado antes da primeira pintura para evitar flash incorreto.
+- Tokens funcionais de sucesso, alerta, erro e informacao devem possuir variacoes contrastantes por tema.
+
 ---
 
 ## 2. Tipografia
@@ -220,6 +252,8 @@ Este design system combina elementos modernos de SaaS (FlowUp) com a solidez cor
               0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 ```
+
+O deslocamento de hover nao pode alterar layout e deve ser removido com `prefers-reduced-motion`.
 
 ### 4.3 Inputs e Forms
 
@@ -437,6 +471,9 @@ Este design system combina elementos modernos de SaaS (FlowUp) com a solidez cor
 }
 ```
 
+Paineis laterais entram e saem pelo eixo horizontal com `transform`, duracao curta e curva
+`ease-in-out`. Em movimento reduzido, o painel muda de estado sem deslocamento perceptivel.
+
 ### Estados
 
 - **Hover:** Elevacao sutil + mudanca de cor
@@ -562,4 +599,3 @@ Este design system combina elementos modernos de SaaS (FlowUp) com a solidez cor
 - **FAST Solucoes:** fastsolucoes.com.br - Inspiracao para autoridade e estrutura
 - **shadcn/ui:** Componentes e padroes de UI
 - **Tailwind UI:** Exemplos de layouts e componentes
-

@@ -36,3 +36,17 @@ Funcionalidade: Registrar participantes do workshop
     Quando tento substituir sua lista de participantes
     Então a operação é rejeitada
     E as participações armazenadas permanecem inalteradas
+
+  @FR-041
+  Cenário: Pesquisar colaboradores para participação
+    Dado que existem muitos colaboradores ativos
+    Quando pesquiso um nome no painel de participantes
+    Então vejo somente candidatos correspondentes
+    E participantes já associados não podem ser adicionados novamente
+
+  @FR-042
+  Cenário: Atualizar a lista imediatamente após confirmação
+    Dado que estou gerenciando participantes de um workshop ativo
+    Quando adiciono um colaborador ou confirmo a remoção de um participante
+    Então a lista atualizada aparece sem fechar o painel
+    E recebo feedback de sucesso sem perder o foco da tarefa

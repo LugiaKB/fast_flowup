@@ -535,6 +535,11 @@ components:
         - $ref: '#/components/schemas/WorkshopInput'
         - type: object
           properties:
+            colaboradorIds:
+              type: array
+              description: Active collaborators initially associated with the workshop
+              uniqueItems: true
+              items: { type: integer, minimum: 1 }
             substituiWorkshopId:
               type: integer
               minimum: 1

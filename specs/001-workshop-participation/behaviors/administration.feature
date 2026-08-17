@@ -27,6 +27,39 @@ Funcionalidade: Administrar colaboradores e workshops
     Então ele fica disponível publicamente
     E seu término é apresentado às 17h
 
+  @FR-043
+  Cenário: Criar workshop com participantes
+    Dado que estou criando um workshop em trimestre válido
+    E pesquiso e seleciono colaboradores ativos sem duplicidade
+    Quando concluo a criação
+    Então o workshop e as participações são criados juntos
+    E o detalhe apresenta imediatamente a lista e a quantidade selecionadas
+
+  @FR-041 @FR-042 @FR-044
+  Cenário: Editar workshop e sua composição de participantes no mesmo painel
+    Dado que um workshop ativo já possui participantes
+    Quando abro seu painel de edição
+    Então a composição atual é carregada e seus participantes são identificados
+    Quando pesquiso colaboradores ativos, incluo um e removo outro
+    Então a seleção permanece consistente sem duplicidades
+    Quando confirmo a edição
+    Então os dados e a lista confirmados são recarregados e apresentados juntos
+
+  @FR-044
+  Cenário: Informar falha parcial ao editar dados e participantes
+    Dado que a atualização dos dados do workshop foi concluída
+    E a substituição da lista de participantes falha
+    Quando a falha é recebida
+    Então o painel permanece aberto com uma explicação da atualização parcial
+    E o estado confirmado é recarregado antes de uma nova tentativa
+
+  @FR-043 @FR-027
+  Cenário: Rejeitar participante inválido durante a criação
+    Dado que a criação referencia um colaborador arquivado, inexistente ou repetido
+    Quando tento criar o workshop
+    Então toda a operação é rejeitada
+    E nenhum workshop ou participação é criado
+
   @FR-018 @FR-034
   Esquema do Cenário: Rejeitar agenda inválida
     Dado que estou criando um workshop

@@ -140,6 +140,67 @@ only transport configuration.
 
 ---
 
+## Phase 8A: Frontend Theme, Motion and Attendance Refinement
+
+**Purpose**: Add theme support and refine existing visual and attendance behavior before backend work.
+
+- [X] T100 Reconcile theme, motion and attendance behavior in `spec.md`, `ui.md`, BDD, design system and backend task descriptions without duplicating OpenAPI operations
+- [X] T101 [P] Write failing card hover and reduced-motion tests in `frontend/src/components/ui/display.test.tsx`
+- [X] T102 Implement subtle no-layout-shift card elevation, border and transform transitions in `frontend/src/components/ui/card.tsx`
+- [X] T103 [P] Write failing sheet entry/exit motion tests while preserving keyboard behavior in `frontend/src/components/ui/sheet.test.tsx`
+- [X] T104 Implement transform-based Radix sheet state animations with reduced-motion fallback in `frontend/src/components/ui/sheet.tsx`
+- [X] T105 [P] Write failing theme bootstrap, system preference, persistence and toggle tests in `frontend/src/features/theme/`
+- [X] T106 Implement semantic light/dark tokens, pre-paint bootstrap, theme provider and header toggle in `frontend/src/app/`, `frontend/src/features/theme/` and shared components
+- [X] T107 Add light/dark axe coverage for navigation, cards, forms, feedback, dialogs and sheets in `frontend/src/test/accessibility.test.tsx`
+- [X] T108 [P] Extend failing attendance tests for collaborator search, loading/error, duplicate prevention, removal confirmation and immediate updates in `frontend/src/features/participantes/attendance-management.test.tsx`
+- [X] T109 Refine the existing attendance sheet and hooks without new endpoints in `frontend/src/features/participantes/`
+- [X] T110 Extend mocked Playwright journeys with theme persistence and searchable immediate attendance updates in `frontend/tests/e2e/mock-journeys.spec.ts`
+- [X] T111 Run and fix lint, typecheck, unit, accessibility, build and mocked Playwright suites via `frontend/package.json`
+
+**Checkpoint**: Refined frontend passes both themes and attendance behavior before T044 begins.
+
+---
+
+## Phase 8B: Complete Workshop Attendance Management
+
+**Purpose**: Support active participant selection during workshop creation and keep existing attendance
+management, detail counts and contract-aligned mocks consistent before backend work.
+
+- [X] T112 Update SDD, BDD, UI, data model and `CreateWorkshopRequest` for atomic initial attendance
+- [X] T113 [P] Write failing workshop-creation attendance tests for search, persistent selection, duplicates, archived collaborators and authorization in `frontend/src/features/workshops/workshop-management.test.tsx`
+- [X] T114 Extract a reusable active-collaborator selection list with loading, empty and error states in `frontend/src/features/participantes/participant-selection.tsx`
+- [X] T115 Extend creation form, mutation types and MSW workshop creation to persist unique active participants atomically in `frontend/src/features/workshops/` and `frontend/src/mocks/`
+- [X] T116 Extend detail tests and rendering to announce immediately updated participant counts in `frontend/src/app/workshops/[id]/`
+- [X] T117 Extend mocked Playwright coverage for creating a workshop with searched participants in `frontend/tests/e2e/mock-journeys.spec.ts`
+- [X] T118 Run and fix lint, typecheck, unit, accessibility, build and mocked Playwright suites
+
+**Checkpoint**: Workshop creation and existing attendance management share selection behavior and match
+the versioned contract before T044 begins.
+
+---
+
+## Phase 8C: Edit Workshop Attendance in the Side Panel
+
+**Purpose**: Reuse the contract-aligned participant selection in the workshop edit panel without creating a
+second attendance rule set or changing the API contract.
+
+- [X] T119 Update SDD, BDD and UI behavior for loading and editing attendance in the workshop side panel,
+  including staged-save partial-failure recovery
+- [X] T120 [P] Write failing edit-panel tests for initial attendance loading, search, add/remove, duplicate
+  prevention, successful staged save and partial failure in `frontend/src/features/workshops/workshop-management.test.tsx`
+- [X] T121 Reuse and extend the shared participant-selection component to identify current members while
+  preserving selections across searches in `frontend/src/features/participantes/participant-selection.tsx`
+- [X] T122 Implement edit-panel attendance loading and staged metadata/bulk-attendance saving with final
+  revalidation in `frontend/src/features/workshops/workshop-management.tsx`
+- [ ] T123 Extend mocked browser coverage for editing workshop attendance through the side panel in
+  `frontend/tests/e2e/mock-journeys.spec.ts`
+- [ ] T124 Run and fix frontend lint, typecheck, unit, accessibility, build and mocked Playwright suites
+
+**Checkpoint**: Creation, detail management and workshop editing share attendance selection behavior, use the
+existing OpenAPI operations and leave a revalidated interface after a partial failure before T044 begins.
+
+---
+
 ## Phase 9: Backend Setup and Foundations
 
 **Purpose**: Establish Clean Architecture, testing, common errors and provider configuration.
@@ -202,20 +263,20 @@ only transport configuration.
 ## Phase 14: Backend User Story 5 - Administrar workshops
 
 - [ ] T074 [P] [US5] Write failing quarter, archive and replacement domain tests in `backend/tests/WorkshopTracker.Domain.Tests/WorkshopLifecycleTests.cs`
-- [ ] T075 [P] [US5] Write failing workshop command HTTP tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/WorkshopsCommandTests.cs`
+- [ ] T075 [P] [US5] Write failing workshop command HTTP tests including atomic creation with unique active participant IDs, archived IDs and unauthorized callers in `backend/tests/WorkshopTracker.Api.IntegrationTests/WorkshopsCommandTests.cs`
 - [ ] T076 [US5] Implement Recife schedule and lifecycle rules in `backend/src/WorkshopTracker.Domain/Workshops/Workshop.cs`
-- [ ] T077 [US5] Implement WorkshopArchiveEvent and command use cases in `backend/src/WorkshopTracker.Application/Workshops/Commands/`
+- [ ] T077 [US5] Implement WorkshopArchiveEvent and transactional create/update use cases, including initial active attendance validation, in `backend/src/WorkshopTracker.Application/Workshops/Commands/`
 - [ ] T078 [US5] Map archive history and create provider migrations in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
-- [ ] T079 [US5] Add authenticated workshop mutations to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs`
+- [ ] T079 [US5] Add authenticated workshop mutations accepting contract-defined initial participant IDs to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs`
 
 ---
 
 ## Phase 15: Backend User Story 6 - Registrar participações
 
-- [ ] T080 [P] [US6] Write failing attendance use-case tests in `backend/tests/WorkshopTracker.Application.Tests/AttendanceCommandTests.cs`
-- [ ] T081 [P] [US6] Write failing attendance HTTP tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/AttendanceTests.cs`
-- [ ] T082 [US6] Implement bulk and idempotent attendance commands in `backend/src/WorkshopTracker.Application/Workshops/Attendance/`
-- [ ] T083 [US6] Add authenticated attendance endpoints to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs`
+- [ ] T080 [P] [US6] Write failing attendance use-case tests for atomic replacement, active-record validation and duplicate prevention in `backend/tests/WorkshopTracker.Application.Tests/AttendanceCommandTests.cs`
+- [ ] T081 [P] [US6] Write failing HTTP tests for bulk replacement and idempotent individual add/remove using the existing OpenAPI paths in `backend/tests/WorkshopTracker.Api.IntegrationTests/AttendanceTests.cs`
+- [ ] T082 [US6] Implement atomic bulk and idempotent individual attendance commands that preserve state on failure in `backend/src/WorkshopTracker.Application/Workshops/Attendance/`
+- [ ] T083 [US6] Add the existing authenticated attendance contract paths to `backend/src/WorkshopTracker.Api/Endpoints/WorkshopsEndpoints.cs` without introducing search-specific attendance endpoints
 
 **Checkpoint**: Backend contract, domain and SQLite integration suites pass for US1-US6.
 
@@ -254,7 +315,7 @@ only transport configuration.
 
 - T001–T009 establish frontend foundations.
 - Frontend story phases run sequentially T010–T040; each test precedes implementation.
-- T041–T043 are a hard gate: no backend task begins before they pass.
+- T041–T043 and refinement tasks T100–T124 are a hard gate: no backend task begins before they pass.
 - T044–T051 establish backend foundations.
 - Backend stories run sequentially T052–T083 so each migration builds on prior schema.
 - T084–T088 require both complete applications.
@@ -267,6 +328,7 @@ only transport configuration.
 - Within each story, unit/component tests and HTTP/page tests marked `[P]` may be authored together
   before implementation.
 - Frontend and backend are intentionally not parallelized because the approved workflow is frontend-first.
+- T101/T103/T105/T108 may be authored independently, but each implementation follows its failing test.
 - Frontend and backend Dockerfiles T089/T090 can be prepared in parallel after integration.
 
 ## Independent Test Criteria

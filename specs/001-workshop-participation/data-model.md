@@ -41,6 +41,8 @@ Invariants:
 - At most one active Workshop exists for each `(localYear, localQuarter)`.
 - Create/update validates weekday and local time before persistence.
 - Moving an active workshop into an occupied quarter is rejected atomically.
+- Creation may receive active collaborator IDs; workshop and unique participation rows are persisted
+  in one transaction, and any missing, archived or duplicate collaborator rejects the whole creation.
 
 State transitions: `Active -> Archived -> Active`. Restore is rejected while the quarter is occupied.
 

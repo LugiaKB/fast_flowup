@@ -30,6 +30,15 @@ participações, seguindo o desafio técnico e as decisões aprovadas no planeja
 - Q: Como as listagens são navegadas? → A: Busca textual e paginação por deslocamento e limite.
 - Q: O que acontece com participações de colaborador arquivado? → A: Permanecem armazenadas, mas ficam ocultas.
 - Q: Qual padrão visual rege o produto? → A: `docs/design_system.md`, sem logo na primeira versão.
+- Q: Como o tema visual é escolhido? → A: A preferência inicial segue o sistema, pode ser alternada
+  manualmente e a escolha explícita persiste sem flash de tema incorreto.
+- Q: Como o administrador localiza e ajusta participantes? → A: Pesquisa colaboradores ativos no mesmo
+  painel, confirma remoções e vê a lista atualizada após cada operação, sem criar associações duplicadas.
+- Q: Participantes podem ser definidos durante a criação do workshop? → A: Sim; o administrador pode
+  pesquisar e selecionar zero ou mais colaboradores ativos, e workshop e participações são criados juntos.
+- Q: Como participantes são ajustados ao editar um workshop? → A: O painel carrega a composição atual e
+  coordena a atualização dos dados e a substituição da lista em etapas; uma falha parcial é informada e os
+  dados são recarregados antes de nova tentativa.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -137,6 +146,13 @@ manter a agenda trimestral e seu histórico.
    a ser público.
 5. **Given** um workshop arquivado para substituição, **When** o substituto é criado no mesmo trimestre,
    **Then** a relação entre os dois é registrada.
+6. **Given** colaboradores ativos selecionados, **When** o administrador cria o workshop, **Then** o
+   workshop já é disponibilizado com participantes e quantidade correspondentes.
+7. **Given** um workshop existente, **When** o administrador o edita, **Then** pode pesquisar, incluir e
+   remover colaboradores ativos no mesmo painel sem perder a seleção durante a busca.
+8. **Given** que a atualização dos dados foi aceita mas a lista de participantes falhou, **When** a falha é
+   recebida, **Then** o painel informa que a operação foi parcial e recarrega o estado confirmado antes de
+   permitir nova tentativa.
 
 ---
 
@@ -158,6 +174,10 @@ detalhes públicos reflitam a participação registrada.
 3. **Given** um participante associado, **When** ele é removido, **Then** deixa de aparecer nos detalhes.
 4. **Given** um colaborador arquivado, **When** uma inclusão é tentada, **Then** a operação é rejeitada sem
    alterar as demais participações.
+5. **Given** muitos colaboradores ativos, **When** o administrador pesquisa no painel, **Then** somente os
+   candidatos correspondentes são exibidos sem perder a seleção atual.
+6. **Given** uma inclusão, remoção ou substituição concluída, **When** a API confirma a operação, **Then** a
+   lista atual é atualizada imediatamente e um feedback de sucesso é anunciado.
 
 ### Edge Cases
 
@@ -169,10 +189,13 @@ detalhes públicos reflitam a participação registrada.
 - Mover um workshop para trimestre ocupado resulta em conflito e preserva os dados anteriores.
 - A criação de substituto rejeita referência a workshop ativo, inexistente ou de outro trimestre.
 - Participações duplicadas não criam registros duplicados.
+- A criação com IDs repetidos, inexistentes ou arquivados é rejeitada integralmente, sem criar workshop.
 - Arquivar colaborador não apaga participações; restaurá-lo torna essas participações visíveis novamente.
 - Expiração de acesso tenta uma única renovação; falha de renovação encerra a sessão sem loop de requisições.
 - Alterar a senha configurada do administrador invalida sessões anteriores.
 - Ações destrutivas exigem confirmação e continuam acessíveis por teclado.
+- Sem preferência salva, o primeiro carregamento usa `prefers-color-scheme`; uma escolha manual posterior
+  prevalece e é aplicada antes da primeira pintura nas próximas visitas.
 
 ## Requirements *(mandatory)*
 
@@ -220,6 +243,21 @@ detalhes públicos reflitam a participação registrada.
   versionamento, o projeto MUST manter um exemplo rastreado que identifique o arquivo de destino,
   documente todas as chaves suportadas, diferencie valores obrigatórios e opcionais e use somente
   placeholders seguros.
+- **FR-038**: A interface MUST oferecer alternância manual entre tema claro e escuro e persistir a escolha
+  explícita do usuário no navegador.
+- **FR-039**: Sem escolha persistida, o tema inicial MUST seguir `prefers-color-scheme` e ser aplicado antes
+  da primeira pintura para evitar flash de tema incorreto.
+- **FR-040**: Ambos os temas MUST cobrir navegação, cards, formulários, diálogos, painéis e estados de
+  feedback com contraste WCAG AA.
+- **FR-041**: O painel de participantes MUST permitir pesquisar colaboradores ativos sem duplicar
+  associações nem perder seleções feitas durante a pesquisa.
+- **FR-042**: Após confirmação da API, alterações de participação MUST atualizar imediatamente a lista
+  e a quantidade apresentadas; remoções MUST exigir confirmação e falhas MUST preservar o estado anterior.
+- **FR-043**: A criação de workshop MUST aceitar uma lista opcional e sem duplicidades de colaboradores
+  ativos, criando o workshop e suas participações de forma atômica ou rejeitando toda a operação.
+- **FR-044**: O painel de edição de workshop MUST carregar os participantes atuais, destacar os já
+  associados e coordenar a atualização dos dados com a substituição da lista; em falha parcial MUST comunicar
+  a etapa concluída e revalidar o estado confirmado.
 
 ### Key Entities
 
@@ -251,6 +289,8 @@ detalhes públicos reflitam a participação registrada.
 - **SC-011**: 100% dos arquivos locais de ambiente ou configuração referenciados pelos fluxos do projeto
   possuem um exemplo rastreado que permite preparar o arquivo sem deduzir nomes de chaves ou incluir
   credenciais reais.
+- **SC-012**: Tema, cards, formulários, painéis, diálogos e feedbacks passam nas verificações automatizadas
+  de contraste e semântica tanto no modo claro quanto no escuro.
 
 ## Assumptions
 
