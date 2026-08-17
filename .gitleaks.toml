@@ -1,0 +1,20 @@
+title = "Fast FlowUp — Gitleaks configuration"
+
+[allowlist]
+  description = "Safe placeholder values from .example files"
+  regexTarget = "match"
+  regexes = [
+    # Generic placeholder patterns used in *.example files
+    "replace-with-",
+    "replace-with-a-strong-password",
+    "replace-with-a-strong-mysql-password",
+    "replace-with-a-strong-mysql-root-password",
+    "replace-with-at-least-32-random-bytes",
+    "replace-with-admin-username",
+  ]
+  paths = [
+    ".env.example",
+    ".env.*.example",
+    "frontend/.env.example",
+    "backend/.env.example",
+  ]
