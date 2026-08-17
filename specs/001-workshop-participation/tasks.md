@@ -287,7 +287,7 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 - [ ] T084 Switch runtime API selection and environment validation in `frontend/src/lib/api/config.ts` and create `frontend/.env.example` with copy instructions, all supported keys and safe placeholders
 - [ ] T085 Add real API auth and mutation integration tests in `frontend/tests/e2e/api-journeys.spec.ts`
 - [ ] T086 Remove mock-mode production reachability while retaining test handlers in `frontend/src/mocks/browser.ts` and `frontend/src/app/providers.tsx`
-- [ ] T087 Add MySQL Testcontainer parity suite in `backend/tests/WorkshopTracker.Api.IntegrationTests/MySqlParityTests.cs`
+- [X] T087 Add MySQL Testcontainer parity suite in `backend/tests/WorkshopTracker.Api.IntegrationTests/MySqlParityTests.cs`
 - [X] T088 Validate runtime Swagger against `specs/001-workshop-participation/contracts/openapi.yaml` in `backend/tests/WorkshopTracker.Api.IntegrationTests/OpenApiContractTests.cs`
 
 ---
