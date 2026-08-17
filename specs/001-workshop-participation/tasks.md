@@ -7,6 +7,10 @@
 **Tests**: TDD is mandatory. Every test task runs and fails for the expected reason before its paired
 implementation task begins.
 
+**Environment examples**: A task MUST NOT create or reference an ignored environment/local
+configuration file unless the same task creates or updates its tracked `.example` counterpart with
+the destination filename, every supported key, required/optional guidance and secret-free placeholders.
+
 **Organization**: All frontend story phases complete against contract-aligned MSW handlers before the
 backend setup phase. Backend phases then implement the same stories and the final integration changes
 only transport configuration.
@@ -219,7 +223,7 @@ only transport configuration.
 
 ## Phase 16: Real API Integration
 
-- [ ] T084 Switch runtime API selection and environment validation in `frontend/src/lib/api/config.ts` and `frontend/.env.example`
+- [ ] T084 Switch runtime API selection and environment validation in `frontend/src/lib/api/config.ts` and create `frontend/.env.example` with copy instructions, all supported keys and safe placeholders
 - [ ] T085 Add real API auth and mutation integration tests in `frontend/tests/e2e/api-journeys.spec.ts`
 - [ ] T086 Remove mock-mode production reachability while retaining test handlers in `frontend/src/mocks/browser.ts` and `frontend/src/app/providers.tsx`
 - [ ] T087 Add MySQL Testcontainer parity suite in `backend/tests/WorkshopTracker.Api.IntegrationTests/MySqlParityTests.cs`
@@ -232,7 +236,7 @@ only transport configuration.
 - [ ] T089 Create frontend multi-stage image and ignore rules in `frontend/Dockerfile` and `.dockerignore`
 - [ ] T090 [P] Create backend multi-stage image in `backend/Dockerfile`
 - [ ] T091 Create SQLite-default and MySQL-profile services in `docker-compose.yml`
-- [ ] T092 Add secret-free root configuration template in `.env.example`
+- [ ] T092 Add secret-free root configuration template in `.env.example` and verify every ignored environment/local configuration file has a documented tracked example
 
 ---
 

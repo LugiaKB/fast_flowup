@@ -210,6 +210,10 @@ detalhes públicos reflitam a participação registrada.
 - **FR-034**: O sistema MUST apresentar erros de validação, ausência, conflito e autorização de forma uniforme.
 - **FR-035**: Dados MUST permanecer disponíveis após reinicialização do serviço.
 - **FR-036**: O comportamento funcional MUST ser equivalente nas duas configurações de banco suportadas.
+- **FR-037**: Para cada arquivo de configuração de ambiente ou configuração local excluído do
+  versionamento, o projeto MUST manter um exemplo rastreado que identifique o arquivo de destino,
+  documente todas as chaves suportadas, diferencie valores obrigatórios e opcionais e use somente
+  placeholders seguros.
 
 ### Key Entities
 
@@ -238,6 +242,9 @@ detalhes públicos reflitam a participação registrada.
 - **SC-009**: Uma instalação nova cria exatamente um administrador e inicializações seguintes não duplicam a conta.
 - **SC-010**: Após a integração, todas as jornadas antes executadas com dados controlados produzem os mesmos
   resultados observáveis com dados reais.
+- **SC-011**: 100% dos arquivos locais de ambiente ou configuração referenciados pelos fluxos do projeto
+  possuem um exemplo rastreado que permite preparar o arquivo sem deduzir nomes de chaves ou incluir
+  credenciais reais.
 
 ## Assumptions
 
