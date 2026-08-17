@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WorkshopTracker.Api/WorkshopTracker.Api.csproj" />
+    <Project Path="src/WorkshopTracker.Application/WorkshopTracker.Application.csproj" />
+    <Project Path="src/WorkshopTracker.Domain/WorkshopTracker.Domain.csproj" />
+    <Project Path="src/WorkshopTracker.Infrastructure/WorkshopTracker.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WorkshopTracker.Api.IntegrationTests/WorkshopTracker.Api.IntegrationTests.csproj" />
+    <Project Path="tests/WorkshopTracker.Application.Tests/WorkshopTracker.Application.Tests.csproj" />
+    <Project Path="tests/WorkshopTracker.Domain.Tests/WorkshopTracker.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

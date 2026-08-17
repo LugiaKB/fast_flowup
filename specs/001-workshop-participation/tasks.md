@@ -205,14 +205,14 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 
 **Purpose**: Establish Clean Architecture, testing, common errors and provider configuration.
 
-- [ ] T044 Create solution and Domain/Application/Infrastructure/Api projects in `backend/WorkshopTracker.slnx` and `backend/src/`
-- [ ] T045 [P] Create Domain, Application and API integration test projects in `backend/tests/`
-- [ ] T046 Configure project references and central package versions in `backend/Directory.Packages.props`
-- [ ] T047 Write failing architecture dependency tests in `backend/tests/WorkshopTracker.Application.Tests/ArchitectureTests.cs`
-- [ ] T048 Implement dependency rules, clock abstraction and result errors in `backend/src/WorkshopTracker.Application/Common/`
-- [ ] T049 Implement Problem Details, request validation, CORS and Swagger base in `backend/src/WorkshopTracker.Api/`
-- [ ] T050 Configure EF Core provider selection and base DbContext in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
-- [ ] T051 Configure WebApplicationFactory and SQLite test database in `backend/tests/WorkshopTracker.Api.IntegrationTests/`
+- [X] T044 Create solution and Domain/Application/Infrastructure/Api projects in `backend/WorkshopTracker.slnx` and `backend/src/`
+- [X] T045 [P] Create Domain, Application and API integration test projects in `backend/tests/`
+- [X] T046 Configure project references and central package versions in `backend/Directory.Packages.props`
+- [X] T047 Write failing architecture dependency tests in `backend/tests/WorkshopTracker.Application.Tests/ArchitectureTests.cs`
+- [X] T048 Implement dependency rules, clock abstraction and result errors in `backend/src/WorkshopTracker.Application/Common/`
+- [X] T049 Implement Problem Details, request validation, CORS and Swagger base in `backend/src/WorkshopTracker.Api/`
+- [X] T050 Configure EF Core provider selection and base DbContext in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
+- [X] T051 Configure WebApplicationFactory and SQLite test database in `backend/tests/WorkshopTracker.Api.IntegrationTests/`
 
 **Checkpoint**: Empty API boots, architecture tests pass and Swagger is available.
 
