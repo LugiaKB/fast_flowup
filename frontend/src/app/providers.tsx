@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { ToastProvider } from "@/components/ui";
+import { AuthProvider } from "@/features/auth/auth-provider";
 
 let workerStart: Promise<void> | undefined;
 
@@ -48,5 +49,9 @@ export function Providers({ children }: { children: ReactNode }) {
     );
   }
 
-  return <ToastProvider>{children}</ToastProvider>;
+  return (
+    <ToastProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </ToastProvider>
+  );
 }

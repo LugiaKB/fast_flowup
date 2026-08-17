@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { afterEach, vi } from "vitest";
 
 import { Providers } from "./providers";
@@ -6,6 +7,9 @@ import { Providers } from "./providers";
 const start = vi.fn().mockResolvedValue(undefined);
 
 vi.mock("@/mocks/browser", () => ({ worker: { start } }));
+vi.mock("@/features/auth/auth-provider", () => ({
+  AuthProvider: ({ children }: { children: ReactNode }) => children,
+}));
 
 afterEach(() => {
   vi.unstubAllEnvs();

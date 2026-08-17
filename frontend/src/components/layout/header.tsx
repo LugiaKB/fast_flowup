@@ -1,10 +1,11 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { LogIn, Menu } from "lucide-react";
+import { LogIn, LogOut, Menu, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useAuth } from "@/features/auth/auth-provider";
 import { cn } from "@/lib/cn";
 
 const navigation = [
@@ -18,13 +19,14 @@ function isActiveRoute(pathname: string, href: string) {
 
 function navigationClassName(active: boolean) {
   return cn(
-    "rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-primary-subtle hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-primary",
+    "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-primary-subtle hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-primary",
     active && "bg-primary-subtle text-gray-900",
   );
 }
 
 export function Header() {
   const pathname = usePathname();
+  const { admin, logout, status } = useAuth();
 
   return (
     <>
@@ -59,14 +61,39 @@ export function Header() {
             })}
           </nav>
 
-          <Link
-            href="/login"
-            aria-current={pathname === "/login" ? "page" : undefined}
-            className="hidden min-h-10 items-center gap-2 rounded-lg border-2 border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary-subtle md:inline-flex"
-          >
-            <LogIn aria-hidden="true" className="size-5" />
-            Entrar
-          </Link>
+          <div className="hidden items-center gap-3 md:flex">
+            {status === "loading" && (
+              <span role="status" className="text-sm text-gray-600">
+                Verificando sessão…
+              </span>
+            )}
+            {status === "visitor" && (
+              <Link
+                href="/login"
+                aria-current={pathname === "/login" ? "page" : undefined}
+                className="inline-flex min-h-10 items-center gap-2 rounded-lg border-2 border-primary px-4 py-2 text-sm font-semibold text-primary hover:bg-primary-subtle"
+              >
+                <LogIn aria-hidden="true" className="size-5" />
+                Entrar
+              </Link>
+            )}
+            {status === "authenticated" && admin && (
+              <>
+                <span className="flex max-w-48 items-center gap-2 truncate text-sm text-gray-700">
+                  <UserRound aria-hidden="true" className="size-5 shrink-0" />
+                  <span className="truncate">{admin.email}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => void logout()}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-lg border-2 border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100"
+                >
+                  <LogOut aria-hidden="true" className="size-5" />
+                  Sair
+                </button>
+              </>
+            )}
+          </div>
 
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
@@ -98,13 +125,33 @@ export function Header() {
                     </DropdownMenu.Item>
                   );
                 })}
-                <DropdownMenu.Separator className="my-2 h-px bg-gray-200" />
-                <DropdownMenu.Item asChild>
-                  <Link href="/login" className={navigationClassName(pathname === "/login")}>
-                    <LogIn aria-hidden="true" className="size-5" />
-                    Entrar
-                  </Link>
-                </DropdownMenu.Item>
+                {status !== "loading" && <DropdownMenu.Separator className="my-2 h-px bg-gray-200" />}
+                {status === "visitor" && (
+                  <DropdownMenu.Item asChild>
+                    <Link href="/login" className={navigationClassName(pathname === "/login")}>
+                      <LogIn aria-hidden="true" className="size-5" />
+                      Entrar
+                    </Link>
+                  </DropdownMenu.Item>
+                )}
+                {status === "authenticated" && admin && (
+                  <>
+                    <DropdownMenu.Label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600">
+                      <UserRound aria-hidden="true" className="size-5 shrink-0" />
+                      <span className="max-w-44 truncate">{admin.email}</span>
+                    </DropdownMenu.Label>
+                    <DropdownMenu.Item asChild>
+                      <button
+                        type="button"
+                        onClick={() => void logout()}
+                        className={cn(navigationClassName(false), "w-full")}
+                      >
+                        <LogOut aria-hidden="true" className="size-5" />
+                        Sair
+                      </button>
+                    </DropdownMenu.Item>
+                  </>
+                )}
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>

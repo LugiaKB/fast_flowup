@@ -72,12 +72,12 @@ only transport configuration.
 
 **Independent Test**: Login, reload refresh, failed refresh, logout and hidden visitor controls.
 
-- [ ] T021 [P] [US3] Write failing auth client and provider tests in `frontend/src/features/auth/auth-provider.test.tsx`
-- [ ] T022 [P] [US3] Write failing login page accessibility tests in `frontend/src/app/login/page.test.tsx`
-- [ ] T023 [US3] Implement auth MSW handlers and refresh-cookie simulation in `frontend/src/mocks/handlers/auth.ts`
-- [ ] T024 [US3] Implement single-retry bearer/refresh flow in `frontend/src/features/auth/auth-client.ts`
-- [ ] T025 [US3] Implement auth provider with access token held only in memory in `frontend/src/features/auth/auth-provider.tsx`
-- [ ] T026 [US3] Implement login page and authenticated header state in `frontend/src/app/login/page.tsx` and `frontend/src/components/layout/header.tsx`
+- [X] T021 [P] [US3] Write failing auth client and provider tests in `frontend/src/features/auth/auth-provider.test.tsx`
+- [X] T022 [P] [US3] Write failing login page accessibility tests in `frontend/src/app/login/page.test.tsx`
+- [X] T023 [US3] Implement auth MSW handlers and refresh-cookie simulation in `frontend/src/mocks/handlers/auth.ts`
+- [X] T024 [US3] Implement single-retry bearer/refresh flow in `frontend/src/features/auth/auth-client.ts`
+- [X] T025 [US3] Implement auth provider with access token held only in memory in `frontend/src/features/auth/auth-provider.tsx`
+- [X] T026 [US3] Implement login page and authenticated header state in `frontend/src/app/login/page.tsx` and `frontend/src/components/layout/header.tsx`
 
 **Checkpoint**: US3 proves session restoration without browser token persistence.
 
