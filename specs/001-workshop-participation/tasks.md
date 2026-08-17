@@ -285,7 +285,7 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 ## Phase 16: Real API Integration
 
 - [X] T084 Switch runtime API selection and environment validation in `frontend/src/lib/api/config.ts` and create `frontend/.env.example` with copy instructions, all supported keys and safe placeholders
-- [ ] T085 Add real API auth and mutation integration tests in `frontend/tests/e2e/api-journeys.spec.ts`
+- [X] T085 Add real API auth and mutation integration tests in `frontend/tests/e2e/api-journeys.spec.ts`
 - [X] T086 Remove mock-mode production reachability while retaining test handlers in `frontend/src/mocks/browser.ts` and `frontend/src/app/providers.tsx`
 - [X] T087 Add MySQL Testcontainer parity suite in `backend/tests/WorkshopTracker.Api.IntegrationTests/MySqlParityTests.cs`
 - [X] T088 Validate runtime Swagger against `specs/001-workshop-participation/contracts/openapi.yaml` in `backend/tests/WorkshopTracker.Api.IntegrationTests/OpenApiContractTests.cs`
@@ -294,22 +294,22 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 
 ## Phase 17: Containers and Operations
 
-- [ ] T089 Create frontend multi-stage image and ignore rules in `frontend/Dockerfile` and `.dockerignore`
-- [ ] T090 [P] Create backend multi-stage image in `backend/Dockerfile`
-- [ ] T091 Create SQLite-default and MySQL-profile services in `docker-compose.yml`
-- [ ] T092 Add secret-free root configuration template in `.env.example` and verify every ignored environment/local configuration file has a documented tracked example
+- [X] T089 Create frontend multi-stage image and ignore rules in `frontend/Dockerfile` and `.dockerignore`
+- [X] T090 [P] Create backend multi-stage image in `backend/Dockerfile`
+- [X] T091 Create SQLite-default and MySQL-profile services in `docker-compose.yml`
+- [X] T092 Add secret-free root configuration template in `.env.example` and verify every ignored environment/local configuration file has a documented tracked example
 
 ---
 
 ## Phase 18: Final Quality and Documentation
 
-- [ ] T093 Add real-API Playwright timing samples and p95 <= 2 seconds assertion in `frontend/tests/e2e/performance.spec.ts`
-- [ ] T094 Add redacted history/worktree secret scanning with example-placeholder allowlist in `.gitleaks.toml` and `scripts/security/scan-secrets.sh`
+- [X] T093 Add real-API Playwright timing samples and p95 <= 2 seconds assertion in `frontend/tests/e2e/performance.spec.ts`
+- [X] T094 Add redacted history/worktree secret scanning with example-placeholder allowlist in `.gitleaks.toml` and `scripts/security/scan-secrets.sh`
 - [ ] T095 Run and fix all frontend/backend tests, builds, performance and secret checks using `frontend/package.json` and `backend/WorkshopTracker.slnx`
 - [ ] T096 Run and fix Docker Compose smoke tests for SQLite and MySQL using `docker-compose.yml`
-- [ ] T097 Run and document WCAG AA, keyboard and Lighthouse validation in `docs/validation.md`
-- [ ] T098 Document local, Docker, provider, performance and security workflows in `README.md`
-- [ ] T099 Re-run every scenario in `specs/001-workshop-participation/quickstart.md` and record final status in `docs/validation.md`
+- [X] T097 Run and document WCAG AA, keyboard and Lighthouse validation in `docs/validation.md`
+- [X] T098 Document local, Docker, provider, performance and security workflows in `README.md`
+- [X] T099 Re-run every scenario in `specs/001-workshop-participation/quickstart.md` and record final status in `docs/validation.md`
 
 ## Dependencies & Execution Order
 
