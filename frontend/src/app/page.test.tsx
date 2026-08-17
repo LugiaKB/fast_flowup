@@ -1,19 +1,16 @@
-import { render, screen } from "@testing-library/react";
-import { axe } from "jest-axe";
+import { render } from "@testing-library/react";
+import { vi } from "vitest";
 
 import Home from "./page";
 
+const redirect = vi.hoisted(() => vi.fn());
+
+vi.mock("next/navigation", () => ({ redirect }));
+
 describe("Home", () => {
-  it("renders the application scaffold", () => {
+  it("redirects to the public workshop listing", () => {
     render(<Home />);
 
-    expect(screen.getByRole("heading", { name: "Workshops FAST" })).toBeInTheDocument();
-    expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
-  });
-
-  it("passes the accessibility smoke test", async () => {
-    const { container } = render(<Home />);
-
-    expect(await axe(container)).toHaveNoViolations();
+    expect(redirect).toHaveBeenCalledWith("/workshops");
   });
 });

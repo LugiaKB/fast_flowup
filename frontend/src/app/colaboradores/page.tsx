@@ -1,22 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Card, EmptyState, ErrorState, LoadingState, Pagination, SearchField } from "@/components/ui";
 import { useColaboradores } from "@/features/colaboradores/use-colaboradores";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 
 const PAGE_SIZE = 6;
-
-function useDebouncedValue(value: string, delay: number) {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => setDebouncedValue(value), delay);
-    return () => window.clearTimeout(timeout);
-  }, [delay, value]);
-
-  return debouncedValue;
-}
 
 export default function ColaboradoresPage() {
   const [query, setQuery] = useState("");

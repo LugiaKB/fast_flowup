@@ -55,12 +55,12 @@ only transport configuration.
 
 **Independent Test**: Search and paginate workshops, open one detail, and validate participant visibility.
 
-- [ ] T015 [P] [US2] Write failing workshop list and detail hook tests in `frontend/src/features/workshops/use-workshops.test.tsx`
-- [ ] T016 [P] [US2] Write failing workshop page accessibility tests in `frontend/src/app/workshops/page.test.tsx` and `frontend/src/app/workshops/[id]/page.test.tsx`
-- [ ] T017 [US2] Implement workshop MSW query/detail handlers in `frontend/src/mocks/handlers/workshops.ts`
-- [ ] T018 [US2] Implement workshop list/detail hooks in `frontend/src/features/workshops/`
-- [ ] T019 [US2] Implement workshop list page in `frontend/src/app/workshops/page.tsx`
-- [ ] T020 [US2] Implement workshop detail and active participant cards in `frontend/src/app/workshops/[id]/page.tsx`
+- [X] T015 [P] [US2] Write failing workshop list and detail hook tests in `frontend/src/features/workshops/use-workshops.test.tsx`
+- [X] T016 [P] [US2] Write failing workshop page accessibility tests in `frontend/src/app/workshops/page.test.tsx` and `frontend/src/app/workshops/[id]/page.test.tsx`
+- [X] T017 [US2] Implement workshop MSW query/detail handlers in `frontend/src/mocks/handlers/workshops.ts`
+- [X] T018 [US2] Implement workshop list/detail hooks in `frontend/src/features/workshops/`
+- [X] T019 [US2] Implement workshop list page in `frontend/src/app/workshops/page.tsx`
+- [X] T020 [US2] Implement workshop detail and active participant cards in `frontend/src/app/workshops/[id]/page.tsx`
 
 **Checkpoint**: US2 passes independently with absent, empty and archived-participant scenarios.
 
