@@ -1,4 +1,5 @@
 using WorkshopTracker.Infrastructure.Persistence;
+using WorkshopTracker.Api.Endpoints;
 using WorkshopTracker.Application;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapColaboradoresEndpoints();
 
 if (!app.Environment.IsEnvironment("Testing"))
 {

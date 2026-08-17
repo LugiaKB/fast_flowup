@@ -220,11 +220,11 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 
 ## Phase 10: Backend User Story 1 - Consultar colaboradores
 
-- [ ] T052 [P] [US1] Write failing collaborator domain/application tests in `backend/tests/WorkshopTracker.Domain.Tests/ColaboradorTests.cs` and `backend/tests/WorkshopTracker.Application.Tests/ColaboradorQueryTests.cs`
-- [ ] T053 [P] [US1] Write failing collaborator HTTP contract tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/ColaboradoresQueryTests.cs`
-- [ ] T054 [US1] Implement Colaborador domain model and query use case in `backend/src/WorkshopTracker.Domain/Colaboradores/` and `backend/src/WorkshopTracker.Application/Colaboradores/`
-- [ ] T055 [US1] Map Colaborador and create SQLite migration in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
-- [ ] T056 [US1] Implement public collaborator endpoints in `backend/src/WorkshopTracker.Api/Endpoints/ColaboradoresEndpoints.cs`
+- [X] T052 [P] [US1] Write failing collaborator domain/application tests in `backend/tests/WorkshopTracker.Domain.Tests/ColaboradorTests.cs` and `backend/tests/WorkshopTracker.Application.Tests/ColaboradorQueryTests.cs`
+- [X] T053 [P] [US1] Write failing collaborator HTTP contract tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/ColaboradoresQueryTests.cs`
+- [X] T054 [US1] Implement Colaborador domain model and query use case in `backend/src/WorkshopTracker.Domain/Colaboradores/` and `backend/src/WorkshopTracker.Application/Colaboradores/`
+- [X] T055 [US1] Map Colaborador and create SQLite migration in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
+- [X] T056 [US1] Implement public collaborator endpoints in `backend/src/WorkshopTracker.Api/Endpoints/ColaboradoresEndpoints.cs`
 
 ---
 
