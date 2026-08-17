@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using WorkshopTracker.Infrastructure.Persistence;
 
 namespace WorkshopTracker.Api.IntegrationTests;
 
@@ -39,5 +42,14 @@ public sealed class ApiStartupTests : IClassFixture<TestWebApplicationFactory>
 
         Assert.Equal(System.Net.HttpStatusCode.NoContent, response.StatusCode);
         Assert.Equal("http://localhost:3000", response.Headers.GetValues("Access-Control-Allow-Origin").Single());
+    }
+
+    [Fact]
+    public void Test_factory_uses_its_unique_temporary_sqlite_database()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var database = scope.ServiceProvider.GetRequiredService<WorkshopTrackerDbContext>();
+
+        Assert.Equal(_factory.DatabasePath, database.Database.GetDbConnection().DataSource);
     }
 }

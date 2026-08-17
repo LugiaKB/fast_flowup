@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using WorkshopTracker.Domain.Colaboradores;
+using WorkshopTracker.Domain.Workshops;
 using WorkshopTracker.Infrastructure.Persistence;
 
 namespace WorkshopTracker.Api.IntegrationTests;
@@ -10,6 +14,8 @@ namespace WorkshopTracker.Api.IntegrationTests;
 public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly string _databasePath = Path.Combine(Path.GetTempPath(), $"workshop-tracker-tests-{Guid.NewGuid():N}.db");
+
+    public string DatabasePath => _databasePath;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -20,6 +26,11 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
             new KeyValuePair<string, string?>("ConnectionStrings:DefaultConnection", $"Data Source={_databasePath}"),
             new KeyValuePair<string, string?>("FrontendOrigin", "http://localhost:3000"),
         ]));
+        builder.ConfigureTestServices(services =>
+        {
+            services.RemoveAll<DbContextOptions<WorkshopTrackerDbContext>>();
+            services.AddDbContext<WorkshopTrackerDbContext>(options => options.UseSqlite($"Data Source={_databasePath}"));
+        });
     }
 
     protected override void Dispose(bool disposing)
@@ -36,11 +47,19 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
 
     public async Task ResetDatabaseAsync(IReadOnlyCollection<Colaborador> colaboradores)
     {
+        await ResetDatabaseAsync(colaboradores, []);
+    }
+
+    public async Task ResetDatabaseAsync(
+        IReadOnlyCollection<Colaborador> colaboradores,
+        IReadOnlyCollection<Workshop> workshops)
+    {
         await using var scope = Services.CreateAsyncScope();
         var database = scope.ServiceProvider.GetRequiredService<WorkshopTrackerDbContext>();
         await database.Database.EnsureDeletedAsync();
         await database.Database.EnsureCreatedAsync();
         await database.Colaboradores.AddRangeAsync(colaboradores);
+        await database.Workshops.AddRangeAsync(workshops);
         await database.SaveChangesAsync();
     }
 
