@@ -10,8 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-var frontendOrigin = builder.Configuration["FrontendOrigin"]
-    ?? throw new InvalidOperationException("FrontendOrigin é obrigatório.");
+
 var signingKey = builder.Configuration["JWT_SIGNING_KEY"]
     ?? (builder.Environment.IsEnvironment("Testing") ? "test-signing-key-that-is-at-least-32-bytes" : throw new InvalidOperationException("JWT_SIGNING_KEY é obrigatória."));
 if (Encoding.UTF8.GetByteCount(signingKey) < 32)
@@ -61,16 +60,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
-builder.Services.AddCors(options => options.AddPolicy("frontend", policy => policy
-    .WithOrigins(frontendOrigin)
-    .AllowAnyHeader()
-    .AllowAnyMethod()
-    .AllowCredentials()));
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy => policy
+        .SetIsOriginAllowed(origin => IsOriginAllowed(origin, builder.Configuration))
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
+
+    options.AddPolicy("frontend", policy => policy
+        .SetIsOriginAllowed(origin => IsOriginAllowed(origin, builder.Configuration))
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
+});
 
 var app = builder.Build();
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseRouting();
 app.UseCors("frontend");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -100,5 +109,27 @@ if (!app.Environment.IsEnvironment("Testing"))
 }
 
 app.Run();
+
+static bool IsOriginAllowed(string origin, IConfiguration configuration)
+{
+    if (string.IsNullOrWhiteSpace(origin)) return false;
+
+    var normalizedOrigin = origin.Trim().TrimEnd('/');
+
+    var rawOrigins = configuration["CORS_ALLOWED_ORIGINS"]
+        ?? configuration["Cors:AllowedOrigins"]
+        ?? configuration["FrontendOrigin"]
+        ?? configuration["FRONTEND_ORIGIN"]
+        ?? configuration["ALLOWED_ORIGINS"]
+        ?? "http://localhost:3000";
+
+    var allowedOrigins = rawOrigins
+        .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Select(o => o.TrimEnd('/'));
+
+    return allowedOrigins.Any(allowed =>
+        string.Equals(allowed, "*", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(allowed, normalizedOrigin, StringComparison.OrdinalIgnoreCase));
+}
 
 public partial class Program;

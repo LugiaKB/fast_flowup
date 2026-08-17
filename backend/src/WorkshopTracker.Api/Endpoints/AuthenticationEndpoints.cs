@@ -129,8 +129,24 @@ public static class AuthenticationEndpoints
         return Results.NoContent();
     }
 
-    private static bool HasTrustedOrigin(HttpRequest request, IConfiguration configuration) =>
-        string.Equals(request.Headers.Origin, configuration["FrontendOrigin"], StringComparison.Ordinal);
+    private static bool HasTrustedOrigin(HttpRequest request, IConfiguration configuration)
+    {
+        var origin = request.Headers.Origin.ToString().TrimEnd('/');
+        if (string.IsNullOrEmpty(origin)) return false;
+
+        var rawOrigins = configuration["CORS_ALLOWED_ORIGINS"]
+            ?? configuration["Cors:AllowedOrigins"]
+            ?? configuration["FrontendOrigin"]
+            ?? configuration["FRONTEND_ORIGIN"]
+            ?? configuration["ALLOWED_ORIGINS"]
+            ?? "http://localhost:3000";
+
+        var allowedOrigins = rawOrigins
+            .Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(item => item.TrimEnd('/'));
+
+        return allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase);
+    }
 
     private static async Task RevokeFamilyAsync(
         WorkshopTrackerDbContext database,

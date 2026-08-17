@@ -26,6 +26,7 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
         [
             new KeyValuePair<string, string?>("Database:Provider", "Sqlite"),
             new KeyValuePair<string, string?>("ConnectionStrings:DefaultConnection", $"Data Source={_databasePath}"),
+            new KeyValuePair<string, string?>("CORS_ALLOWED_ORIGINS", "https://fast-flowup.vercel.app,http://localhost:3000"),
             new KeyValuePair<string, string?>("FrontendOrigin", "http://localhost:3000"),
         ]));
         builder.ConfigureTestServices(services =>
