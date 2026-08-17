@@ -17,9 +17,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:a11y": "vitest run --testNamePattern=accessibility",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --config=playwright.config.ts",
+    "test:e2e:api": "playwright test --config=playwright.api.config.ts",
     "generate:api": "openapi-typescript ../specs/001-workshop-participation/contracts/openapi.yaml -o src/lib/api/schema.d.ts"
   },
+
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.23",
     "@radix-ui/react-dialog": "^1.1.23",
