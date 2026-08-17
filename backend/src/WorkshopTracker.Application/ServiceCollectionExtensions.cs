@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<ListColaboradoresUseCase>();
+        services.AddScoped<ManageColaboradoresUseCase>();
         services.AddScoped<ListWorkshopsUseCase>();
         services.AddScoped<GetWorkshopUseCase>();
         return services;

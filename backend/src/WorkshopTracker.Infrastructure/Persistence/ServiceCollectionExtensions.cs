@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IClock, SystemClock>();
         services.AddScoped<IColaboradorReadRepository, EfColaboradorReadRepository>();
+        services.AddScoped<IColaboradorCommandRepository, EfColaboradorCommandRepository>();
         services.AddScoped<IWorkshopReadRepository, EfWorkshopReadRepository>();
         services.AddDbContext<WorkshopTrackerDbContext>(options =>
         {

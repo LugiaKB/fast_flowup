@@ -25,6 +25,63 @@ public static class ColaboradoresEndpoints
         .Produces<PagedColaboradores>()
         .ProducesValidationProblem();
 
+        endpoints.MapPost("/api/colaboradores", async (
+            ColaboradorInput input,
+            ManageColaboradoresUseCase useCase,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await ExecuteAsync(async () => await useCase.CreateAsync(input.Nome, cancellationToken));
+            return result is null
+                ? ValidationProblem()
+                : Results.Created($"/api/colaboradores/{result.Id}", ColaboradorResponse.FromDomain(result));
+        })
+        .WithName("createColaborador")
+        .WithTags("Colaboradores")
+        .RequireAuthorization()
+        .Produces<ColaboradorResponse>(StatusCodes.Status201Created)
+        .ProducesValidationProblem();
+
+        endpoints.MapPut("/api/colaboradores/{id:int}", async (
+            int id,
+            ColaboradorInput input,
+            ManageColaboradoresUseCase useCase,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await ExecuteAsync(() => useCase.UpdateAsync(id, input.Nome, cancellationToken));
+            return result is null ? Results.NotFound() : Results.Ok(ColaboradorResponse.FromDomain(result));
+        })
+        .WithName("updateColaborador")
+        .WithTags("Colaboradores")
+        .RequireAuthorization()
+        .Produces<ColaboradorResponse>()
+        .Produces(StatusCodes.Status404NotFound)
+        .ProducesValidationProblem();
+
+        endpoints.MapDelete("/api/colaboradores/{id:int}", async (
+            int id,
+            ManageColaboradoresUseCase useCase,
+            CancellationToken cancellationToken) =>
+            await useCase.ArchiveAsync(id, cancellationToken) ? Results.NoContent() : Results.NotFound())
+        .WithName("archiveColaborador")
+        .WithTags("Colaboradores")
+        .RequireAuthorization()
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status404NotFound);
+
+        endpoints.MapPost("/api/colaboradores/{id:int}/restaurar", async (
+            int id,
+            ManageColaboradoresUseCase useCase,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await useCase.RestoreAsync(id, cancellationToken);
+            return result is null ? Results.NotFound() : Results.Ok(ColaboradorResponse.FromDomain(result));
+        })
+        .WithName("restoreColaborador")
+        .WithTags("Colaboradores")
+        .RequireAuthorization()
+        .Produces<ColaboradorResponse>()
+        .Produces(StatusCodes.Status404NotFound);
+
         return endpoints;
     }
 
@@ -68,4 +125,24 @@ public static class ColaboradoresEndpoints
 
         return int.TryParse(value, out parsed);
     }
+
+    private static async Task<WorkshopTracker.Domain.Colaboradores.Colaborador?> ExecuteAsync(
+        Func<Task<WorkshopTracker.Domain.Colaboradores.Colaborador?>> operation)
+    {
+        try
+        {
+            return await operation();
+        }
+        catch (WorkshopTracker.Domain.DomainValidationException)
+        {
+            return null;
+        }
+    }
+
+    private static IResult ValidationProblem() => Results.ValidationProblem(new Dictionary<string, string[]>
+    {
+        ["nome"] = ["O nome do colaborador deve ter entre 1 e 160 caracteres."],
+    });
+
+    public sealed record ColaboradorInput(string Nome);
 }
