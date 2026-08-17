@@ -1,0 +1,648 @@
+openapi: 3.0.3
+info:
+  title: Workshop Participation API
+  version: 1.0.0
+  description: Public queries and authenticated administration of collaborators, workshops and attendance.
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Authentication
+  - name: Colaboradores
+  - name: Workshops
+  - name: Participantes
+paths:
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      operationId: login
+      summary: Authenticate the configured administrator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated; also sets the HttpOnly refresh cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+  /api/auth/refresh:
+    post:
+      tags: [Authentication]
+      operationId: refreshSession
+      summary: Rotate the refresh cookie and issue a new access token
+      parameters:
+        - $ref: '#/components/parameters/OriginHeader'
+      responses:
+        '200':
+          description: Session refreshed and cookie rotated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '403':
+          $ref: '#/components/responses/ForbiddenProblem'
+  /api/auth/logout:
+    post:
+      tags: [Authentication]
+      operationId: logout
+      summary: Revoke the current refresh family and clear its cookie
+      parameters:
+        - $ref: '#/components/parameters/OriginHeader'
+      responses:
+        '204':
+          description: Session ended; idempotent when no active session remains
+        '403':
+          $ref: '#/components/responses/ForbiddenProblem'
+  /api/auth/me:
+    get:
+      tags: [Authentication]
+      operationId: getCurrentAdmin
+      summary: Return the authenticated administrator
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current administrator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminSummary'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+
+  /api/colaboradores:
+    get:
+      tags: [Colaboradores]
+      operationId: listColaboradores
+      summary: List collaborators; archived status requires authentication
+      parameters:
+        - $ref: '#/components/parameters/Query'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Status'
+      responses:
+        '200':
+          description: Collaborators ordered by name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedColaboradores'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+    post:
+      tags: [Colaboradores]
+      operationId: createColaborador
+      summary: Create a collaborator
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColaboradorInput'
+      responses:
+        '201':
+          description: Collaborator created
+          headers:
+            Location:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Colaborador'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+  /api/colaboradores/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Colaboradores]
+      operationId: getColaborador
+      summary: Get a collaborator; archived records appear only to administrators
+      responses:
+        '200':
+          description: Collaborator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Colaborador'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+    put:
+      tags: [Colaboradores]
+      operationId: updateColaborador
+      summary: Update a collaborator
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ColaboradorInput'
+      responses:
+        '200':
+          description: Collaborator updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Colaborador'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+    delete:
+      tags: [Colaboradores]
+      operationId: archiveColaborador
+      summary: Archive a collaborator without deleting attendance
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Archived; idempotent when already archived
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+  /api/colaboradores/{id}/restaurar:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Colaboradores]
+      operationId: restoreColaborador
+      summary: Restore an archived collaborator
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Collaborator restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Colaborador'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+
+  /api/workshops:
+    get:
+      tags: [Workshops]
+      operationId: listWorkshops
+      summary: List workshops; archived status requires authentication
+      parameters:
+        - $ref: '#/components/parameters/Query'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Status'
+      responses:
+        '200':
+          description: Workshops ordered by date descending
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedWorkshops'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+    post:
+      tags: [Workshops]
+      operationId: createWorkshop
+      summary: Create a workshop, optionally linking an archived predecessor
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkshopRequest'
+      responses:
+        '201':
+          description: Workshop created
+          headers:
+            Location:
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkshopDetail'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '409':
+          $ref: '#/components/responses/ConflictProblem'
+  /api/workshops/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Workshops]
+      operationId: getWorkshop
+      summary: Get workshop details and active participants
+      responses:
+        '200':
+          description: Workshop details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkshopDetail'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+    put:
+      tags: [Workshops]
+      operationId: updateWorkshop
+      summary: Update workshop metadata
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkshopInput'
+      responses:
+        '200':
+          description: Workshop updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkshopDetail'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+        '409':
+          $ref: '#/components/responses/ConflictProblem'
+    delete:
+      tags: [Workshops]
+      operationId: archiveWorkshop
+      summary: Archive a workshop and create an archive event
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArchiveWorkshopRequest'
+      responses:
+        '204':
+          description: Workshop archived
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+  /api/workshops/{id}/restaurar:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    post:
+      tags: [Workshops]
+      operationId: restoreWorkshop
+      summary: Restore a workshop when its quarter is available
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Workshop restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkshopDetail'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+        '409':
+          $ref: '#/components/responses/ConflictProblem'
+  /api/workshops/{id}/participantes:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [Participantes]
+      operationId: replaceParticipantes
+      summary: Replace the complete attendance list
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceParticipantesRequest'
+      responses:
+        '200':
+          description: Updated workshop details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkshopDetail'
+        '400':
+          $ref: '#/components/responses/ValidationProblem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+        '409':
+          $ref: '#/components/responses/ConflictProblem'
+  /api/workshops/{id}/participantes/{colaboradorId}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+      - $ref: '#/components/parameters/ColaboradorId'
+    put:
+      tags: [Participantes]
+      operationId: addParticipante
+      summary: Idempotently add one participant
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Participant present
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+        '409':
+          $ref: '#/components/responses/ConflictProblem'
+    delete:
+      tags: [Participantes]
+      operationId: removeParticipante
+      summary: Idempotently remove one participant
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Participant absent
+        '401':
+          $ref: '#/components/responses/UnauthorizedProblem'
+        '404':
+          $ref: '#/components/responses/NotFoundProblem'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+    ColaboradorId:
+      name: colaboradorId
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+    Query:
+      name: query
+      in: query
+      required: false
+      schema: { type: string, maxLength: 200 }
+    Offset:
+      name: offset
+      in: query
+      required: false
+      schema: { type: integer, minimum: 0, default: 0 }
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    Status:
+      name: status
+      in: query
+      required: false
+      description: Archived and all views require administrator authentication
+      schema:
+        type: string
+        enum: [active, archived, all]
+        default: active
+    OriginHeader:
+      name: Origin
+      in: header
+      required: true
+      schema: { type: string, format: uri }
+  responses:
+    ValidationProblem:
+      description: Request validation failed
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    UnauthorizedProblem:
+      description: Authentication is absent or invalid
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    ForbiddenProblem:
+      description: Origin or authorization policy rejected the operation
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    NotFoundProblem:
+      description: Resource does not exist or is not visible to the caller
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    ConflictProblem:
+      description: Domain state conflicts with the requested change
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      additionalProperties: false
+      properties:
+        email: { type: string, format: email, maxLength: 320 }
+        password: { type: string, minLength: 1, maxLength: 256 }
+    AuthResponse:
+      type: object
+      required: [accessToken, accessTokenExpiresAt, admin]
+      properties:
+        accessToken: { type: string }
+        accessTokenExpiresAt: { type: string, format: date-time }
+        admin:
+          $ref: '#/components/schemas/AdminSummary'
+    AdminSummary:
+      type: object
+      required: [id, email]
+      properties:
+        id: { type: string }
+        email: { type: string, format: email }
+    ColaboradorInput:
+      type: object
+      required: [nome]
+      additionalProperties: false
+      properties:
+        nome: { type: string, minLength: 1, maxLength: 160 }
+    Colaborador:
+      type: object
+      required: [id, nome, status, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        nome: { type: string }
+        status:
+          $ref: '#/components/schemas/RecordStatus'
+        archivedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    WorkshopInput:
+      type: object
+      required: [nome, dataRealizacao, descricao]
+      additionalProperties: false
+      properties:
+        nome: { type: string, minLength: 1, maxLength: 200 }
+        dataRealizacao:
+          type: string
+          format: date-time
+          description: Thursday at 16:00 in America/Recife, with explicit offset
+        descricao: { type: string, minLength: 1, maxLength: 4000 }
+    CreateWorkshopRequest:
+      allOf:
+        - $ref: '#/components/schemas/WorkshopInput'
+        - type: object
+          properties:
+            substituiWorkshopId:
+              type: integer
+              minimum: 1
+              nullable: true
+    WorkshopSummary:
+      type: object
+      required: [id, nome, dataRealizacao, dataTermino, descricao, status, participantCount]
+      properties:
+        id: { type: integer }
+        nome: { type: string }
+        dataRealizacao: { type: string, format: date-time }
+        dataTermino: { type: string, format: date-time }
+        descricao: { type: string }
+        status:
+          $ref: '#/components/schemas/RecordStatus'
+        archivedAt:
+          type: string
+          format: date-time
+          nullable: true
+        participantCount: { type: integer, minimum: 0 }
+    WorkshopDetail:
+      allOf:
+        - $ref: '#/components/schemas/WorkshopSummary'
+        - type: object
+          required: [participantes, archiveEvents]
+          properties:
+            participantes:
+              type: array
+              items:
+                $ref: '#/components/schemas/Colaborador'
+            archiveEvents:
+              type: array
+              description: Empty for public callers; populated for administrators
+              items:
+                $ref: '#/components/schemas/WorkshopArchiveEvent'
+    WorkshopArchiveEvent:
+      type: object
+      required: [id, reason, archivedAt, archivedByAdminId]
+      properties:
+        id: { type: integer }
+        reason:
+          $ref: '#/components/schemas/ArchiveReason'
+        archivedAt: { type: string, format: date-time }
+        archivedByAdminId: { type: string }
+        restoredAt:
+          type: string
+          format: date-time
+          nullable: true
+        replacementWorkshopId:
+          type: integer
+          nullable: true
+    ArchiveWorkshopRequest:
+      type: object
+      required: [reason]
+      additionalProperties: false
+      properties:
+        reason:
+          $ref: '#/components/schemas/ArchiveReason'
+    ReplaceParticipantesRequest:
+      type: object
+      required: [colaboradorIds]
+      additionalProperties: false
+      properties:
+        colaboradorIds:
+          type: array
+          uniqueItems: true
+          items: { type: integer, minimum: 1 }
+    PagedColaboradores:
+      type: object
+      required: [items, totalItems, offset, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Colaborador'
+        totalItems: { type: integer, minimum: 0 }
+        offset: { type: integer, minimum: 0 }
+        limit: { type: integer, minimum: 1, maximum: 100 }
+    PagedWorkshops:
+      type: object
+      required: [items, totalItems, offset, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkshopSummary'
+        totalItems: { type: integer, minimum: 0 }
+        offset: { type: integer, minimum: 0 }
+        limit: { type: integer, minimum: 1, maximum: 100 }
+    RecordStatus:
+      type: string
+      enum: [active, archived]
+    ArchiveReason:
+      type: string
+      enum: [manual, replacement]
+    ProblemDetails:
+      type: object
+      required: [type, title, status, code]
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, minimum: 400, maximum: 599 }
+        detail: { type: string }
+        instance: { type: string, format: uri-reference }
+        code: { type: string }
+        traceId: { type: string }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
