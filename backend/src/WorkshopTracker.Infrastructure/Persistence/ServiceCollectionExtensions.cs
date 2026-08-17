@@ -47,6 +47,7 @@ public static class ServiceCollectionExtensions
             options.Password.RequireNonAlphanumeric = false;
         })
         .AddEntityFrameworkStores<WorkshopTrackerDbContext>();
+        services.AddScoped<JwtTokenService>();
 
         return services;
     }
