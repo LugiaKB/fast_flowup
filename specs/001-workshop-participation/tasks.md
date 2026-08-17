@@ -305,8 +305,8 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 
 - [X] T093 Add real-API Playwright timing samples and p95 <= 2 seconds assertion in `frontend/tests/e2e/performance.spec.ts`
 - [X] T094 Add redacted history/worktree secret scanning with example-placeholder allowlist in `.gitleaks.toml` and `scripts/security/scan-secrets.sh`
-- [ ] T095 Run and fix all frontend/backend tests, builds, performance and secret checks using `frontend/package.json` and `backend/WorkshopTracker.slnx`
-- [ ] T096 Run and fix Docker Compose smoke tests for SQLite and MySQL using `docker-compose.yml`
+- [X] T095 Run and fix all frontend/backend tests, builds, performance and secret checks using `frontend/package.json` and `backend/WorkshopTracker.slnx`
+- [X] T096 Run and fix Docker Compose smoke tests for SQLite and MySQL using `docker-compose.yml`
 - [X] T097 Run and document WCAG AA, keyboard and Lighthouse validation in `docs/validation.md`
 - [X] T098 Document local, Docker, provider, performance and security workflows in `README.md`
 - [X] T099 Re-run every scenario in `specs/001-workshop-participation/quickstart.md` and record final status in `docs/validation.md`

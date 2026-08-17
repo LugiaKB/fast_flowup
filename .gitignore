@@ -71,6 +71,7 @@ storybook-static/
 coverage/
 .nyc_output/
 playwright-report/
+playwright-report-*/
 test-results/
 blob-report/
 
