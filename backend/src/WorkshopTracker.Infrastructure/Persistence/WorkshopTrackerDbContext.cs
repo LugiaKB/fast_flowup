@@ -1,19 +1,24 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorkshopTracker.Domain.Colaboradores;
 using WorkshopTracker.Domain.Workshops;
+using WorkshopTracker.Domain.Authentication;
+using WorkshopTracker.Infrastructure.Authentication;
 
 namespace WorkshopTracker.Infrastructure.Persistence;
 
 public sealed class WorkshopTrackerDbContext(DbContextOptions<WorkshopTrackerDbContext> options)
-    : DbContext(options)
+    : IdentityDbContext<Administrator>(options)
 {
     public DbSet<Colaborador> Colaboradores => Set<Colaborador>();
     public DbSet<Workshop> Workshops => Set<Workshop>();
     public DbSet<Participacao> Participacoes => Set<Participacao>();
+    public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         var collaborator = modelBuilder.Entity<Colaborador>();
         collaborator.ToTable("Colaboradores");
         collaborator.HasKey(item => item.Id);
@@ -46,5 +51,13 @@ public sealed class WorkshopTrackerDbContext(DbContextOptions<WorkshopTrackerDbC
             .WithMany()
             .HasForeignKey(item => item.ColaboradorId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        var refreshSession = modelBuilder.Entity<RefreshSession>();
+        refreshSession.ToTable("RefreshSessions");
+        refreshSession.HasKey(item => item.Id);
+        refreshSession.Property(item => item.AdministratorId).HasMaxLength(450).IsRequired();
+        refreshSession.Property(item => item.TokenHash).HasMaxLength(64).IsRequired();
+        refreshSession.HasIndex(item => item.TokenHash).IsUnique();
+        refreshSession.HasIndex(item => item.FamilyId);
     }
 }

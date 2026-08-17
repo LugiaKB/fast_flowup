@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using WorkshopTracker.Application.Common;
 using WorkshopTracker.Application.Colaboradores;
 using WorkshopTracker.Application.Workshops;
+using WorkshopTracker.Infrastructure.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 namespace WorkshopTracker.Infrastructure.Persistence;
 
@@ -36,6 +38,15 @@ public static class ServiceCollectionExtensions
 
             throw new InvalidOperationException("Database:Provider deve ser Sqlite ou MySql.");
         });
+        services.AddIdentityCore<Administrator>(options =>
+        {
+            options.Password.RequiredLength = 12;
+            options.Password.RequireDigit = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+        })
+        .AddEntityFrameworkStores<WorkshopTrackerDbContext>();
 
         return services;
     }
