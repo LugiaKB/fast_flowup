@@ -21,6 +21,11 @@ participações, seguindo o desafio técnico e as decisões aprovadas no planeja
 - Q: A periodicidade é uma regra? → A: Sim; quinta-feira, das 16h às 17h, um workshop ativo por trimestre.
 - Q: Qual fuso rege a agenda? → A: `America/Recife`.
 - Q: Como ocorre uma substituição? → A: O anterior é arquivado manualmente antes da criação do substituto.
+
+### Session 2026-08-17
+
+- Q: Qual identificador autentica o administrador? → A: Um nome de usuário pré-definido por ambiente.
+- Q: Como o login funciona no frontend mockado? → A: Qualquer nome de usuário e senha não vazios iniciam a sessão simulada.
 - Q: Como o histórico de substituição é preservado? → A: Evento com motivo padronizado e substituto opcional.
 - Q: Como as listagens são navegadas? → A: Busca textual e paginação por deslocamento e limite.
 - Q: O que acontece com participações de colaborador arquivado? → A: Permanecem armazenadas, mas ficam ocultas.
@@ -182,7 +187,8 @@ detalhes públicos reflitam a participação registrada.
 - **FR-007**: O detalhe público MUST exibir nome, realização, descrição e participantes ativos.
 - **FR-008**: Todas as consultas paginadas MUST informar itens, total, deslocamento e limite.
 - **FR-009**: Consultas públicas MUST funcionar sem autenticação.
-- **FR-010**: O sistema MUST autenticar exclusivamente o administrador provisionado pelo ambiente.
+- **FR-010**: O sistema MUST autenticar exclusivamente o administrador provisionado por
+  `ADMIN_USERNAME` e `ADMIN_PASSWORD`.
 - **FR-011**: O sistema MUST NOT oferecer cadastro público ou gestão pública de contas.
 - **FR-012**: Ações de criação, edição, arquivamento, restauração e participação MUST exigir administrador.
 - **FR-013**: Controles administrativos MUST permanecer ausentes da interface de visitantes.
@@ -221,7 +227,7 @@ detalhes públicos reflitam a participação registrada.
 - **Workshop**: Evento identificado por ID, nome, realização e descrição, sujeito à agenda trimestral e
   ao estado ativo ou arquivado.
 - **Participação**: Associação única entre colaborador e workshop indicando presença.
-- **Administrador**: Identidade provisionada que possui permissão exclusiva para alterar dados.
+- **Administrador**: Identidade provisionada por nome de usuário que possui permissão exclusiva para alterar dados.
 - **Sessão administrativa**: Acesso curto e renovação revogável associados ao administrador.
 - **Evento de arquivamento**: Registro histórico de arquivamento de workshop com motivo, responsável,
   instante, restauração e substituto opcional.

@@ -8,14 +8,14 @@ Funcionalidade: Autenticar administrador
   @FR-010 @FR-012 @FR-013
   Cenário: Entrar com credenciais válidas
     Dado que o administrador inicial existe
-    Quando informo as credenciais válidas
+    Quando informo o nome de usuário e a senha válidos
     Então uma sessão administrativa é iniciada
     E os controles de alteração aparecem nas telas públicas
 
   @FR-010 @FR-034
   Cenário: Rejeitar credenciais inválidas
     Dado que estou na tela de login
-    Quando informo credenciais inválidas
+    Quando informo nome de usuário ou senha inválidos
     Então vejo uma mensagem genérica de autenticação inválida
     E nenhuma sessão é iniciada
 

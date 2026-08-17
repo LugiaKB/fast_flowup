@@ -81,7 +81,7 @@ export function Header() {
               <>
                 <span className="flex max-w-48 items-center gap-2 truncate text-sm text-gray-700">
                   <UserRound aria-hidden="true" className="size-5 shrink-0" />
-                  <span className="truncate">{admin.email}</span>
+                  <span className="truncate">{admin.username}</span>
                 </span>
                 <button
                   type="button"
@@ -138,7 +138,7 @@ export function Header() {
                   <>
                     <DropdownMenu.Label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600">
                       <UserRound aria-hidden="true" className="size-5 shrink-0" />
-                      <span className="max-w-44 truncate">{admin.email}</span>
+                      <span className="max-w-44 truncate">{admin.username}</span>
                     </DropdownMenu.Label>
                     <DropdownMenu.Item asChild>
                       <button

@@ -37,13 +37,13 @@ describe("LoginPage", () => {
     auth.login.mockResolvedValue(undefined);
     const { container } = render(<LoginPage />);
 
-    await user.type(screen.getByRole("textbox", { name: "E-mail" }), "admin@example.test");
-    await user.type(screen.getByLabelText("Senha"), "demo-only-password");
+    await user.type(screen.getByRole("textbox", { name: "Nome de usuário" }), "gestor");
+    await user.type(screen.getByLabelText("Senha"), "uma-senha-qualquer");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
     expect(auth.login).toHaveBeenCalledWith({
-      email: "admin@example.test",
-      password: "demo-only-password",
+      username: "gestor",
+      password: "uma-senha-qualquer",
     });
     expect(replace).toHaveBeenCalledWith("/workshops");
     expect(await axe(container)).toHaveNoViolations();
@@ -51,16 +51,16 @@ describe("LoginPage", () => {
 
   it("shows a generic error without revealing which credential failed", async () => {
     const user = userEvent.setup();
-    auth.login.mockRejectedValue(new Error("E-mail não encontrado"));
+    auth.login.mockRejectedValue(new Error("Usuário não encontrado"));
     render(<LoginPage />);
 
-    await user.type(screen.getByRole("textbox", { name: "E-mail" }), "unknown@example.test");
+    await user.type(screen.getByRole("textbox", { name: "Nome de usuário" }), "desconhecido");
     await user.type(screen.getByLabelText("Senha"), "wrong-password");
     await user.click(screen.getByRole("button", { name: "Entrar" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Não foi possível entrar. Verifique suas credenciais e tente novamente.",
     );
-    expect(screen.getByRole("alert")).not.toHaveTextContent("E-mail não encontrado");
+    expect(screen.getByRole("alert")).not.toHaveTextContent("Usuário não encontrado");
   });
 });

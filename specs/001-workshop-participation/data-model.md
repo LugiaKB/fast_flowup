@@ -87,13 +87,13 @@ Identity account provisioned from environment configuration.
 | Field | Type | Rules |
 |---|---|---|
 | `Id` | string | Identity primary key |
-| `Email` | string | Required, normalized and unique |
+| `UserName` | string | Required, normalized and unique; provisioned by `ADMIN_USERNAME` |
 | `PasswordHash` | string | Managed by identity subsystem; never exposed |
 | `SecurityStamp` | string | Changes when configured password is synchronized |
 
-Provisioning is idempotent: create if absent, ensure the Admin role, verify the configured password,
-and reset it plus revoke sessions when it differs. Missing or policy-invalid credentials stop startup
-outside automated tests.
+Provisioning is idempotent: create if absent, synchronize the configured username, ensure the Admin
+role, verify the configured password, and reset it plus revoke sessions when it differs. Missing or
+policy-invalid credentials stop startup outside automated tests.
 
 ## RefreshSession
 

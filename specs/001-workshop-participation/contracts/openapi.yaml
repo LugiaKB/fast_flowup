@@ -480,10 +480,10 @@ components:
   schemas:
     LoginRequest:
       type: object
-      required: [email, password]
+      required: [username, password]
       additionalProperties: false
       properties:
-        email: { type: string, format: email, maxLength: 320 }
+        username: { type: string, minLength: 1, maxLength: 100 }
         password: { type: string, minLength: 1, maxLength: 256 }
     AuthResponse:
       type: object
@@ -495,10 +495,10 @@ components:
           $ref: '#/components/schemas/AdminSummary'
     AdminSummary:
       type: object
-      required: [id, email]
+      required: [id, username]
       properties:
         id: { type: string }
-        email: { type: string, format: email }
+        username: { type: string }
     ColaboradorInput:
       type: object
       required: [nome]

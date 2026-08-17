@@ -30,7 +30,11 @@ hide the fetch/refresh behavior the exercise should demonstrate.
 **Decision**: Issue a 15-minute signed JWT access token returned in the response body and held only in
 memory. Issue a seven-day cryptographically random refresh token in an HttpOnly cookie, store only its
 SHA-256 hash, rotate it on every refresh, and revoke its token family on detected reuse. Logout revokes
-the current family. Password synchronization revokes all administrator refresh sessions.
+the current family. The administrator signs in with the username and password configured through
+`ADMIN_USERNAME` and `ADMIN_PASSWORD`; password synchronization revokes all administrator refresh sessions.
+The contract uses the configured username as its sole administrator identity field. In mock mode only,
+any non-empty username and password are accepted so frontend administration flows remain independent
+from real credentials.
 
 **Rationale**: A page reload can restore access without exposing the long-lived credential to
 JavaScript. Short access lifetime bounds the effect of an in-memory token leak.

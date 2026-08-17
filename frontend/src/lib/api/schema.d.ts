@@ -233,8 +233,7 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         LoginRequest: {
-            /** Format: email */
-            email: string;
+            username: string;
             password: string;
         };
         AuthResponse: {
@@ -245,8 +244,7 @@ export interface components {
         };
         AdminSummary: {
             id: string;
-            /** Format: email */
-            email: string;
+            username: string;
         };
         ColaboradorInput: {
             nome: string;

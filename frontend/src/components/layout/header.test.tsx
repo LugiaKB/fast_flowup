@@ -6,7 +6,7 @@ import { beforeEach, vi } from "vitest";
 import { Header } from "./header";
 
 const auth = vi.hoisted(() => ({
-  admin: undefined as { id: string; email: string } | undefined,
+  admin: undefined as { id: string; username: string } | undefined,
   logout: vi.fn(),
   status: "visitor" as "loading" | "visitor" | "authenticated",
 }));
@@ -50,12 +50,12 @@ describe("Header", () => {
 
   it("shows the administrator and logout control only in an authenticated session", async () => {
     const user = userEvent.setup();
-    auth.admin = { id: "admin-1", email: "admin@example.test" };
+    auth.admin = { id: "admin-1", username: "gestor" };
     auth.status = "authenticated";
 
     render(<Header />);
 
-    expect(screen.getByText("admin@example.test")).toBeInTheDocument();
+    expect(screen.getByText("gestor")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Entrar" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Sair" }));
     expect(auth.logout).toHaveBeenCalledTimes(1);

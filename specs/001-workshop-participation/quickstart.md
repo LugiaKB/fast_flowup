@@ -13,7 +13,8 @@ This guide defines the expected end-state commands and observable checks. See [O
 
 1. Copy `.env.example` to `.env`.
 2. Replace every placeholder secret locally. Never commit `.env`.
-3. Use a password of at least 12 characters and a JWT signing key of at least 32 random bytes.
+3. Define the administrator username and password with `ADMIN_USERNAME` and `ADMIN_PASSWORD`.
+4. Use a password of at least 12 characters and a JWT signing key of at least 32 random bytes.
 
 SQLite is the default. MySQL requires `DATABASE_PROVIDER=MySql` and the Compose MySQL profile.
 
@@ -105,7 +106,7 @@ Validate at minimum:
 - Confirm refresh cookie is HttpOnly and production configuration sets Secure.
 - Confirm CORS rejects an origin other than `FRONTEND_ORIGIN`.
 - Confirm refresh reuse revokes the token family.
-- Change `ADMIN_PASSWORD`, restart, and confirm old sessions and password fail.
+- Change `ADMIN_USERNAME` or `ADMIN_PASSWORD`, restart, and confirm old sessions and credentials fail.
 
 ## Provider parity
 

@@ -12,7 +12,7 @@
 | `/colaboradores` | Público | Busca, total, paginação e cards de colaboradores | Criar, editar, arquivar e restaurar |
 | `/workshops` | Público | Busca, total, paginação e cards de workshops | Criar, editar, arquivar e restaurar |
 | `/workshops/[id]` | Público | Dados do workshop e participantes ativos | Editar workshop e manter participantes |
-| `/login` | Público | Formulário de autenticação | Redireciona usuário autenticado |
+| `/login` | Público | Formulário com nome de usuário e senha | Redireciona usuário autenticado |
 
 Não haverá rota de cadastro, painel administrativo duplicado, landing page ou rota obrigatória de gráficos.
 

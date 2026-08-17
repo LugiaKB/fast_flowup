@@ -9,8 +9,8 @@ import { createAuthenticatedRequest } from "./auth-client";
 import { AuthProvider, useAuth } from "./auth-provider";
 
 const credentials = {
-  email: "admin@example.test",
-  password: "demo-only-password",
+  username: "qualquer-usuario",
+  password: "qualquer-senha",
 };
 
 beforeEach(() => {
@@ -28,7 +28,7 @@ function SessionProbe() {
   return (
     <div>
       <p>{status}</p>
-      {admin && <p>{admin.email}</p>}
+      {admin && <p>{admin.username}</p>}
       <button type="button" onClick={() => void login(credentials)}>
         Autenticar
       </button>
@@ -54,7 +54,7 @@ describe("AuthProvider", () => {
     expect(await screen.findByText("visitor")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Autenticar" }));
-    expect(await screen.findByText(credentials.email)).toBeInTheDocument();
+    expect(await screen.findByText(credentials.username)).toBeInTheDocument();
     expect(storageSpy).not.toHaveBeenCalled();
 
     firstRender.unmount();
@@ -64,11 +64,11 @@ describe("AuthProvider", () => {
       </AuthProvider>,
     );
 
-    expect(await screen.findByText(credentials.email)).toBeInTheDocument();
+    expect(await screen.findByText(credentials.username)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Encerrar" }));
     expect(await screen.findByText("visitor")).toBeInTheDocument();
-    expect(screen.queryByText(credentials.email)).not.toBeInTheDocument();
+    expect(screen.queryByText(credentials.username)).not.toBeInTheDocument();
   });
 
   it("falls back to a visitor when refresh is rejected", async () => {
@@ -107,7 +107,7 @@ describe("createAuthenticatedRequest", () => {
         HttpResponse.json({
           accessToken: "renewed-token",
           accessTokenExpiresAt: "2026-08-17T18:15:00Z",
-          admin: { id: "admin-1", email: credentials.email },
+          admin: { id: "admin-1", username: credentials.username },
         }),
       ),
       http.get("http://api.test/api/protected", ({ request }) => {
@@ -154,7 +154,7 @@ describe("createAuthenticatedRequest", () => {
         return HttpResponse.json({
           accessToken: "still-invalid",
           accessTokenExpiresAt: "2026-08-17T18:15:00Z",
-          admin: { id: "admin-1", email: credentials.email },
+          admin: { id: "admin-1", username: credentials.username },
         });
       }),
       http.get("http://api.test/api/protected", () =>

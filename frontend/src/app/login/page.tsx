@@ -1,6 +1,6 @@
 "use client";
 
-import { LockKeyhole, Mail } from "lucide-react";
+import { LockKeyhole, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 
@@ -14,7 +14,7 @@ const GENERIC_LOGIN_ERROR =
 export default function LoginPage() {
   const router = useRouter();
   const { login, status } = useAuth();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>();
@@ -29,7 +29,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login({ email, password });
+      await login({ username, password });
       router.replace("/workshops");
     } catch {
       setError(GENERIC_LOGIN_ERROR);
@@ -54,13 +54,13 @@ export default function LoginPage() {
         <Card className="mt-8 hover:translate-y-0 hover:shadow-card">
           <form className="grid gap-5" onSubmit={handleSubmit} noValidate>
             <TextField
-              label="E-mail"
-              type="email"
+              label="Nome de usuário"
+              type="text"
               autoComplete="username"
               required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              leadingIcon={<Mail aria-hidden="true" className="size-5" />}
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              leadingIcon={<UserRound aria-hidden="true" className="size-5" />}
             />
             <TextField
               label="Senha"
@@ -88,7 +88,7 @@ export default function LoginPage() {
           <aside className="mt-6 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700">
             <p className="font-semibold text-gray-900">Credenciais da demonstração</p>
             <p className="mt-1 break-all">
-              {DEMO_ADMIN_CREDENTIALS.email} / {DEMO_ADMIN_CREDENTIALS.password}
+              {DEMO_ADMIN_CREDENTIALS.username} / {DEMO_ADMIN_CREDENTIALS.password}
             </p>
           </aside>
         )}

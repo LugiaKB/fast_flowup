@@ -1,6 +1,5 @@
 import { http, HttpResponse } from "msw";
 
-import { DEMO_ADMIN_CREDENTIALS } from "@/features/auth/demo-credentials";
 import type { components } from "@/lib/api/schema";
 
 type AdminSummary = components["schemas"]["AdminSummary"];
@@ -8,14 +7,10 @@ type AuthResponse = components["schemas"]["AuthResponse"];
 type LoginRequest = components["schemas"]["LoginRequest"];
 type ProblemDetails = components["schemas"]["ProblemDetails"];
 
-const mockAdmin: AdminSummary = {
-  id: "admin-1",
-  email: DEMO_ADMIN_CREDENTIALS.email,
-};
-
 let refreshSessionActive = false;
 let accessTokenSequence = 0;
 let currentAccessToken = "";
+let currentUsername = "";
 
 function unauthorizedProblem(): ProblemDetails {
   return {
@@ -40,7 +35,10 @@ function issueSession(): AuthResponse {
   return {
     accessToken: currentAccessToken,
     accessTokenExpiresAt: "2099-01-01T00:15:00Z",
-    admin: mockAdmin,
+    admin: {
+      id: "admin-1",
+      username: currentUsername,
+    },
   };
 }
 
@@ -48,19 +46,23 @@ export function resetAuthMockState() {
   refreshSessionActive = false;
   accessTokenSequence = 0;
   currentAccessToken = "";
+  currentUsername = "";
 }
 
 export const authHandlers = [
   http.post("*/api/auth/login", async ({ request }) => {
     const credentials = (await request.json()) as Partial<LoginRequest>;
+    const username = typeof credentials.username === "string" ? credentials.username.trim() : "";
     const validCredentials =
-      credentials.email === DEMO_ADMIN_CREDENTIALS.email &&
-      credentials.password === DEMO_ADMIN_CREDENTIALS.password;
+      username.length > 0 &&
+      typeof credentials.password === "string" &&
+      credentials.password.length > 0;
 
     if (!validCredentials) return unauthorizedResponse();
 
     // This server-side state represents the opaque HttpOnly cookie that browser
     // JavaScript cannot read. The real API owns the cookie and its rotation.
+    currentUsername = username;
     refreshSessionActive = true;
     return HttpResponse.json(issueSession());
   }),
@@ -82,6 +84,7 @@ export const authHandlers = [
       return unauthorizedResponse();
     }
 
-    return HttpResponse.json(mockAdmin);
+    const admin: AdminSummary = { id: "admin-1", username: currentUsername };
+    return HttpResponse.json(admin);
   }),
 ];
