@@ -42,11 +42,12 @@ public static class ServiceCollectionExtensions
         });
         services.AddIdentityCore<Administrator>(options =>
         {
-            options.Password.RequiredLength = 12;
-            options.Password.RequireDigit = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireLowercase = true;
+            options.Password.RequiredLength = 1;
+            options.Password.RequireDigit = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
             options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredUniqueChars = 1;
         })
         .AddEntityFrameworkStores<WorkshopTrackerDbContext>();
         services.AddScoped<JwtTokenService>();
