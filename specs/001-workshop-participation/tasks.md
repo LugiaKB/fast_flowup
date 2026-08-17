@@ -23,7 +23,7 @@ only transport configuration.
 - [X] T002 [P] Configure TypeScript, ESLint, Vitest, Testing Library and axe in `frontend/tsconfig.json`, `frontend/eslint.config.mjs` and `frontend/vitest.config.ts`
 - [X] T003 [P] Configure Playwright browser projects in `frontend/playwright.config.ts` and `frontend/tests/e2e/`
 - [X] T004 Generate TypeScript schemas from OpenAPI into `frontend/src/lib/api/schema.d.ts` and add its script to `frontend/package.json`
-- [ ] T005 Implement fetch client, Problem Details mapping and abort support in `frontend/src/lib/api/client.ts`
+- [X] T005 Implement fetch client, Problem Details mapping and abort support in `frontend/src/lib/api/client.ts`
 - [ ] T006 Add deterministic fixtures and MSW browser/test bootstrap in `frontend/src/mocks/` and `frontend/src/test/setup.ts`
 - [ ] T007 Map design tokens, Poppins/Inter fonts and reduced-motion rules in `frontend/src/app/globals.css` and `frontend/src/app/layout.tsx`
 - [ ] T008 Implement accessible shared UI primitives in `frontend/src/components/ui/`
