@@ -28,9 +28,14 @@ public static class AdminSeeder
             return;
         }
 
-        var resetToken = await users.GeneratePasswordResetTokenAsync(administrator);
-        var reset = await users.ResetPasswordAsync(administrator, resetToken, password);
-        EnsureSuccess(reset, "Não foi possível sincronizar a senha administrativa.");
+        if (await users.HasPasswordAsync(administrator))
+        {
+            var remove = await users.RemovePasswordAsync(administrator);
+            EnsureSuccess(remove, "Não foi possível limpar a senha administrativa anterior.");
+        }
+
+        var add = await users.AddPasswordAsync(administrator, password);
+        EnsureSuccess(add, "Não foi possível sincronizar a nova senha administrativa.");
         var database = services.GetRequiredService<WorkshopTrackerDbContext>();
         var activeSessions = await database.RefreshSessions
             .Where(session => session.AdministratorId == administrator.Id && session.RevokedAt == null)

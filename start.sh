@@ -72,6 +72,14 @@ ADMIN_USERNAME="$(grep -E '^ADMIN_USERNAME=' "$ROOT_DIR/.env" | cut -d '=' -f2- 
 ADMIN_PASSWORD="$(grep -E '^ADMIN_PASSWORD=' "$ROOT_DIR/.env" | cut -d '=' -f2- | tr -d '"'\'' ' || echo "Admin@12345678")"
 DATABASE_PROVIDER="$(grep -E '^DATABASE_PROVIDER=' "$ROOT_DIR/.env" | cut -d '=' -f2- | tr -d '"'\'' ' || echo "Sqlite")"
 
+# Validar requisitos da política de senha do Identity
+if [[ ${#ADMIN_PASSWORD} -lt 12 ]]; then
+  echo -e "${RED}❌ Erro de configuração no .env:${NC}"
+  echo -e "${RED}   A variável ADMIN_PASSWORD deve ter no mínimo 12 caracteres.${NC}"
+  echo -e "${YELLOW}   Exemplo válido: Admin@12345678 ou FlowUpAdmin123!${NC}"
+  exit 1
+fi
+
 # 4. Tratar argumentos e determinar flags do compose
 COMPOSE_ARGS=()
 SHOULD_BUILD=false
