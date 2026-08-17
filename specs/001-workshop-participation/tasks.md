@@ -192,9 +192,9 @@ second attendance rule set or changing the API contract.
   preserving selections across searches in `frontend/src/features/participantes/participant-selection.tsx`
 - [X] T122 Implement edit-panel attendance loading and staged metadata/bulk-attendance saving with final
   revalidation in `frontend/src/features/workshops/workshop-management.tsx`
-- [ ] T123 Extend mocked browser coverage for editing workshop attendance through the side panel in
+- [X] T123 Extend mocked browser coverage for editing workshop attendance through the side panel in
   `frontend/tests/e2e/mock-journeys.spec.ts`
-- [ ] T124 Run and fix frontend lint, typecheck, unit, accessibility, build and mocked Playwright suites
+- [X] T124 Run and fix frontend lint, typecheck, unit, accessibility, build and mocked Playwright suites
 
 **Checkpoint**: Creation, detail management and workshop editing share attendance selection behavior, use the
 existing OpenAPI operations and leave a revalidated interface after a partial failure before T044 begins.

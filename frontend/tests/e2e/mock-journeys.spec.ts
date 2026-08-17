@@ -97,6 +97,32 @@ test("US5: creates a contract-valid workshop", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Larissa Gomes" })).toBeVisible();
 });
 
+test("US5/US6: edits workshop attendance in the same side panel", async ({ page }) => {
+  await loginAsAdministrator(page);
+
+  await page.getByRole("button", { name: "Editar Comunicação que conecta" }).click();
+  const dialog = page.getByRole("dialog", { name: "Editar workshop" });
+  await expect(dialog.getByRole("heading", { name: "Participantes do workshop" })).toBeVisible();
+  await expect(dialog.getByRole("checkbox", { name: /Ana Beatriz/ })).toBeChecked();
+
+  const search = dialog.getByRole("searchbox", { name: "Buscar participantes" });
+  await search.fill("Helena");
+  await dialog.getByRole("checkbox", { name: "Helena Martins" }).check();
+  await search.clear();
+  await dialog.getByRole("checkbox", { name: /Carlos Eduardo/ }).uncheck();
+
+  const name = dialog.getByRole("textbox", { name: "Nome" });
+  await name.fill("Comunicação que conecta atualizada");
+  await dialog.getByRole("button", { name: "Salvar alterações" }).click();
+
+  await expect(page.getByText("Workshop e participantes atualizados")).toBeVisible();
+  await page
+    .getByRole("link", { name: "Ver detalhes de Comunicação que conecta atualizada" })
+    .click();
+  await expect(page.getByRole("heading", { name: "Carlos Eduardo" })).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Helena Martins" })).toBeVisible();
+});
+
 test("US6: searches and updates workshop attendance without closing the panel", async ({ page }) => {
   await loginAsAdministrator(page);
   await page.getByRole("link", { name: "Ver detalhes de Comunicação que conecta" }).click();
