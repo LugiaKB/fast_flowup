@@ -86,9 +86,10 @@ export default function LoginPage() {
 
         {process.env.NEXT_PUBLIC_API_MODE === "mock" && (
           <aside className="mt-6 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700">
-            <p className="font-semibold text-gray-900">Credenciais da demonstração</p>
-            <p className="mt-1 break-all">
-              {DEMO_ADMIN_CREDENTIALS.username} / {DEMO_ADMIN_CREDENTIALS.password}
+            <p className="font-semibold text-gray-900">Acesso de demonstração</p>
+            <p className="mt-1">Qualquer nome de usuário e senha não vazios são aceitos.</p>
+            <p className="mt-2 break-all">
+              Exemplo: {DEMO_ADMIN_CREDENTIALS.username} / {DEMO_ADMIN_CREDENTIALS.password}
             </p>
           </aside>
         )}

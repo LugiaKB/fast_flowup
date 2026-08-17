@@ -49,6 +49,13 @@ export function resetAuthMockState() {
   currentUsername = "";
 }
 
+export function isMockAuthorized(request: Request) {
+  return (
+    currentAccessToken.length > 0 &&
+    request.headers.get("Authorization") === `Bearer ${currentAccessToken}`
+  );
+}
+
 export const authHandlers = [
   http.post("*/api/auth/login", async ({ request }) => {
     const credentials = (await request.json()) as Partial<LoginRequest>;
@@ -80,9 +87,7 @@ export const authHandlers = [
   }),
 
   http.get("*/api/auth/me", ({ request }) => {
-    if (request.headers.get("Authorization") !== `Bearer ${currentAccessToken}`) {
-      return unauthorizedResponse();
-    }
+    if (!isMockAuthorized(request)) return unauthorizedResponse();
 
     const admin: AdminSummary = { id: "admin-1", username: currentUsername };
     return HttpResponse.json(admin);

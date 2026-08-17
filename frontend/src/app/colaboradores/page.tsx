@@ -2,7 +2,21 @@
 
 import { useState } from "react";
 
-import { Card, EmptyState, ErrorState, LoadingState, Pagination, SearchField } from "@/components/ui";
+import {
+  Badge,
+  Card,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  Pagination,
+  SearchField,
+} from "@/components/ui";
+import { useAuth } from "@/features/auth/auth-provider";
+import {
+  ColaboradorManagement,
+  ColaboradorStatusSelect,
+  type ColaboradorStatusFilter,
+} from "@/features/colaboradores/colaborador-management";
 import { useColaboradores } from "@/features/colaboradores/use-colaboradores";
 import { useDebouncedValue } from "@/lib/use-debounced-value";
 
@@ -11,26 +25,38 @@ const PAGE_SIZE = 6;
 export default function ColaboradoresPage() {
   const [query, setQuery] = useState("");
   const [offset, setOffset] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<ColaboradorStatusFilter>("active");
+  const { request, status: authStatus } = useAuth();
+  const isAdmin = authStatus === "authenticated";
   const debouncedQuery = useDebouncedValue(query, 250);
   const { data, error, isLoading, refetch } = useColaboradores({
     query: debouncedQuery,
     offset,
     limit: PAGE_SIZE,
+    status: isAdmin ? statusFilter : undefined,
+    requester: isAdmin ? request : undefined,
   });
+  const handleChanged = () => {
+    setOffset(0);
+    refetch();
+  };
 
   return (
     <main
       id="main-content"
       className="mx-auto w-full max-w-[var(--container-max)] px-[var(--container-padding)] py-12 sm:py-16"
     >
-      <div className="max-w-2xl">
-        <h1 className="text-3xl font-bold sm:text-4xl">Colaboradores</h1>
-        <p className="mt-3 text-lg text-gray-700">
-          Consulte as pessoas ativas que podem participar dos workshops.
-        </p>
+      <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+        <div className="max-w-2xl">
+          <h1 className="text-3xl font-bold sm:text-4xl">Colaboradores</h1>
+          <p className="mt-3 text-lg text-gray-700">
+            Consulte as pessoas ativas que podem participar dos workshops.
+          </p>
+        </div>
+        {isAdmin && <ColaboradorManagement onChanged={handleChanged} />}
       </div>
 
-      <div className="mt-8 max-w-xl">
+      <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-[minmax(0,1fr)_14rem] sm:items-end">
         <SearchField
           label="Buscar colaboradores"
           placeholder="Digite parte do nome"
@@ -40,6 +66,15 @@ export default function ColaboradoresPage() {
             setOffset(0);
           }}
         />
+        {isAdmin && (
+          <ColaboradorStatusSelect
+            value={statusFilter}
+            onChange={(nextStatus) => {
+              setStatusFilter(nextStatus);
+              setOffset(0);
+            }}
+          />
+        )}
       </div>
 
       <div className="mt-10">
@@ -55,7 +90,11 @@ export default function ColaboradoresPage() {
         {!isLoading && !error && data?.totalItems === 0 && (
           <EmptyState
             title="Nenhum colaborador encontrado"
-            description="Tente ajustar os termos da busca para encontrar outra pessoa."
+            description={
+              isAdmin && statusFilter === "archived"
+                ? "Nenhum colaborador está arquivado com os filtros atuais."
+                : "Tente ajustar os termos da busca para encontrar outra pessoa."
+            }
           />
         )}
 
@@ -73,7 +112,21 @@ export default function ColaboradoresPage() {
               {data.items.map((colaborador) => (
                 <li key={colaborador.id}>
                   <Card className="h-full">
-                    <h3 className="text-xl font-semibold">{colaborador.nome}</h3>
+                    <div className="flex h-full flex-col gap-5">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <h3 className="text-xl font-semibold">{colaborador.nome}</h3>
+                        {isAdmin && (
+                          <Badge tone={colaborador.status === "active" ? "success" : "warning"}>
+                            {colaborador.status === "active" ? "Ativo" : "Arquivado"}
+                          </Badge>
+                        )}
+                      </div>
+                      {isAdmin && (
+                        <div className="mt-auto">
+                          <ColaboradorManagement colaborador={colaborador} onChanged={handleChanged} />
+                        </div>
+                      )}
+                    </div>
                   </Card>
                 </li>
               ))}

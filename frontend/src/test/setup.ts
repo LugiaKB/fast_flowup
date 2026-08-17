@@ -4,6 +4,7 @@ import { cleanup } from "@testing-library/react";
 import { toHaveNoViolations } from "jest-axe";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 
+import { resetColaboradoresMockState } from "@/mocks/data/colaboradores";
 import { resetAuthMockState } from "@/mocks/handlers/auth";
 import { server } from "@/mocks/server";
 
@@ -23,6 +24,7 @@ afterEach(() => {
   cleanup();
   server.resetHandlers();
   resetAuthMockState();
+  resetColaboradoresMockState();
 });
 
 afterAll(() => server.close());

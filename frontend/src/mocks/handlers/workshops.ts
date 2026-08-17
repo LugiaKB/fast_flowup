@@ -2,7 +2,8 @@ import { http, HttpResponse } from "msw";
 
 import type { components } from "@/lib/api/schema";
 
-import { colaboradorArquivadoFixture, workshopsFixture } from "../fixtures";
+import { findMockColaborador } from "../data/colaboradores";
+import { workshopsFixture } from "../fixtures";
 
 type PagedWorkshops = components["schemas"]["PagedWorkshops"];
 type ProblemDetails = components["schemas"]["ProblemDetails"];
@@ -16,6 +17,15 @@ function parseInteger(value: string | null, fallback: number) {
   if (value === null) return fallback;
   const parsed = Number(value);
   return Number.isInteger(parsed) ? parsed : Number.NaN;
+}
+
+function activeParticipantsFor(workshop: (typeof workshopsFixture)[number]) {
+  const participantIds = workshop.participantes.map(({ id }) => id);
+  if (workshop.id === 1) participantIds.push(9);
+
+  return participantIds
+    .map(findMockColaborador)
+    .filter((participant) => participant?.status === "active");
 }
 
 export const workshopsHandlers = [
@@ -49,15 +59,18 @@ export const workshopsHandlers = [
         (left, right) =>
           new Date(right.dataRealizacao).getTime() - new Date(left.dataRealizacao).getTime(),
       );
-    const summaries: WorkshopSummary[] = matching.map((workshop) => ({
-      id: workshop.id,
-      nome: workshop.nome,
-      descricao: workshop.descricao,
-      dataRealizacao: workshop.dataRealizacao,
-      dataTermino: workshop.dataTermino,
-      status: workshop.status,
-      participantCount: workshop.participantCount,
-    }));
+    const summaries: WorkshopSummary[] = matching.map((workshop) => {
+      const participantCount = activeParticipantsFor(workshop).length;
+      return {
+        id: workshop.id,
+        nome: workshop.nome,
+        descricao: workshop.descricao,
+        dataRealizacao: workshop.dataRealizacao,
+        dataTermino: workshop.dataTermino,
+        status: workshop.status,
+        participantCount,
+      };
+    });
     const response: PagedWorkshops = {
       items: summaries.slice(offset, offset + limit),
       totalItems: summaries.length,
@@ -80,13 +93,11 @@ export const workshopsHandlers = [
       });
     }
 
-    const associatedParticipants =
-      workshop.id === 1
-        ? [...workshop.participantes, colaboradorArquivadoFixture]
-        : workshop.participantes;
+    const participantes = activeParticipantsFor(workshop);
     return HttpResponse.json({
       ...workshop,
-      participantes: associatedParticipants.filter(({ status }) => status === "active"),
+      participantCount: participantes.length,
+      participantes,
       archiveEvents: [],
     });
   }),

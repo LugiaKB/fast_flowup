@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { ApiError, apiRequest } from "./client";
+import { ApiError, apiRequest, type ApiRequestOptions } from "./client";
+
+export type ApiRequester = <T>(path: string, options?: ApiRequestOptions) => Promise<T>;
 
 interface QueryState<T> {
   requestKey: string | null;
@@ -10,7 +12,7 @@ interface QueryState<T> {
   error: ApiError | Error | null;
 }
 
-export function useApiQuery<T>(requestPath: string | null) {
+export function useApiQuery<T>(requestPath: string | null, requester: ApiRequester = apiRequest) {
   const [revision, setRevision] = useState(0);
   const [state, setState] = useState<QueryState<T>>({
     requestKey: null,
@@ -24,7 +26,7 @@ export function useApiQuery<T>(requestPath: string | null) {
     if (!requestPath || !requestKey) return;
 
     const controller = new AbortController();
-    apiRequest<T>(requestPath, { signal: controller.signal })
+    requester<T>(requestPath, { signal: controller.signal })
       .then((data) => setState({ requestKey, data, error: null }))
       .catch((reason: unknown) => {
         if (reason instanceof DOMException && reason.name === "AbortError") return;
@@ -33,7 +35,7 @@ export function useApiQuery<T>(requestPath: string | null) {
       });
 
     return () => controller.abort();
-  }, [requestKey, requestPath]);
+  }, [requestKey, requestPath, requester]);
 
   if (!requestKey) return { data: null, error: null, isLoading: false, refetch };
 

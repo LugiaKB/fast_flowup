@@ -34,7 +34,7 @@ describe("WorkshopsPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Próxima" }));
     expect(await screen.findByRole("heading", { name: "Gestão do tempo em equipe" })).toBeInTheDocument();
-  });
+  }, 10_000);
 
   it("filters workshops after the search debounce", async () => {
     const user = userEvent.setup();

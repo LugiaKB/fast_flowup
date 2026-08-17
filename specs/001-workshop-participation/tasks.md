@@ -89,10 +89,10 @@ only transport configuration.
 
 **Independent Test**: Complete the full collaborator lifecycle while visitor controls stay absent.
 
-- [ ] T027 [P] [US4] Write failing collaborator mutation and panel tests in `frontend/src/features/colaboradores/colaborador-management.test.tsx`
-- [ ] T028 [US4] Extend collaborator MSW handlers for authenticated lifecycle in `frontend/src/mocks/handlers/colaboradores.ts`
-- [ ] T029 [US4] Implement collaborator mutation hooks in `frontend/src/features/colaboradores/use-colaborador-mutations.ts`
-- [ ] T030 [US4] Implement collaborator sheet, archive dialog and status filter in `frontend/src/features/colaboradores/colaborador-management.tsx`
+- [X] T027 [P] [US4] Write failing collaborator mutation and panel tests in `frontend/src/features/colaboradores/colaborador-management.test.tsx`
+- [X] T028 [US4] Extend collaborator MSW handlers for authenticated lifecycle in `frontend/src/mocks/handlers/colaboradores.ts`
+- [X] T029 [US4] Implement collaborator mutation hooks in `frontend/src/features/colaboradores/use-colaborador-mutations.ts`
+- [X] T030 [US4] Implement collaborator sheet, archive dialog and status filter in `frontend/src/features/colaboradores/colaborador-management.tsx`
 
 **Checkpoint**: US4 lifecycle passes with focus return, validation and status revalidation.
 
