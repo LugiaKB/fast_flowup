@@ -64,7 +64,7 @@ echo ""
 # ---------------------------------------------------------------------------
 echo "=== Scanning Git history ==="
 if "$GITLEAKS" git \
-    --source "$REPO_ROOT" \
+    "$REPO_ROOT" \
     --config "$CONFIG" \
     --redact \
     --verbose; then
