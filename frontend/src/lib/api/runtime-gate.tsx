@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
-import { getApiRuntimeConfig } from "./runtime";
+import { getApiRuntimeConfig } from "./config";
 
 let workerStart: Promise<void> | undefined;
 

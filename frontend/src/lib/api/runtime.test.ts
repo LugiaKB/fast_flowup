@@ -1,6 +1,6 @@
 import { afterEach, vi } from "vitest";
 
-import { getApiRuntimeConfig } from "./runtime";
+import { getApiRuntimeConfig } from "./config";
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -19,5 +19,12 @@ describe("API runtime configuration", () => {
     vi.stubEnv("NEXT_PUBLIC_API_MODE", "mock");
 
     expect(getApiRuntimeConfig().mode).toBe("mock");
+  });
+
+  it("rejects API mode without an absolute API URL", () => {
+    vi.stubEnv("NEXT_PUBLIC_API_MODE", "api");
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "");
+
+    expect(() => getApiRuntimeConfig()).toThrow("NEXT_PUBLIC_API_URL");
   });
 });

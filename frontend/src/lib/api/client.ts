@@ -1,5 +1,5 @@
 import type { components } from "./schema";
-import { getApiRuntimeConfig } from "./runtime";
+import { getApiRuntimeConfig } from "./config";
 
 export type ProblemDetails = components["schemas"]["ProblemDetails"];
 
