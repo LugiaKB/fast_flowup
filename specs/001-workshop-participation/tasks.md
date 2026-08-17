@@ -27,7 +27,7 @@ only transport configuration.
 - [X] T006 Add deterministic fixtures and MSW browser/test bootstrap in `frontend/src/mocks/` and `frontend/src/test/setup.ts`
 - [X] T007 Map design tokens, Poppins/Inter fonts and reduced-motion rules in `frontend/src/app/globals.css` and `frontend/src/app/layout.tsx`
 - [X] T008 Implement accessible shared UI primitives in `frontend/src/components/ui/`
-- [ ] T009 Implement responsive header, navigation and application providers in `frontend/src/components/layout/` and `frontend/src/app/providers.tsx`
+- [X] T009 Implement responsive header, navigation and application providers in `frontend/src/components/layout/` and `frontend/src/app/providers.tsx`
 
 **Checkpoint**: Lint, typecheck and a smoke component test pass with mock mode enabled.
 

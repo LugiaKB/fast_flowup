@@ -8,6 +8,7 @@ describe("Home", () => {
     render(<Home />);
 
     expect(screen.getByRole("heading", { name: "Workshops FAST" })).toBeInTheDocument();
+    expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
   });
 
   it("passes the accessibility smoke test", async () => {
