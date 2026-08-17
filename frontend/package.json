@@ -17,7 +17,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:a11y": "vitest run --testNamePattern=accessibility",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "generate:api": "openapi-typescript ../specs/001-workshop-participation/contracts/openapi.yaml -o src/lib/api/schema.d.ts"
   },
   "dependencies": {
     "next": "^16.3.1",
@@ -39,6 +40,7 @@
     "eslint-config-next": "^16.3.1",
     "jest-axe": "^11.0.0",
     "jsdom": "^30.0.1",
+    "openapi-typescript": "^7.13.0",
     "typescript": "^5",
     "vitest": "^4.1.10"
   }
