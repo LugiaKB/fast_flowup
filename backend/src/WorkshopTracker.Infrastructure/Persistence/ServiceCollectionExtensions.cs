@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IColaboradorReadRepository, EfColaboradorReadRepository>();
         services.AddScoped<IColaboradorCommandRepository, EfColaboradorCommandRepository>();
         services.AddScoped<IWorkshopReadRepository, EfWorkshopReadRepository>();
+        services.AddScoped<IWorkshopCommandRepository, EfWorkshopCommandRepository>();
         services.AddDbContext<WorkshopTrackerDbContext>(options =>
         {
             if (string.Equals(provider, "Sqlite", StringComparison.OrdinalIgnoreCase))

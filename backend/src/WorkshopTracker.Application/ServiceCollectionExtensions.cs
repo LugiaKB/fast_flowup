@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ManageColaboradoresUseCase>();
         services.AddScoped<ListWorkshopsUseCase>();
         services.AddScoped<GetWorkshopUseCase>();
+        services.AddScoped<ManageWorkshopsUseCase>();
         return services;
     }
 }

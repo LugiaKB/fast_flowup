@@ -57,6 +57,51 @@ public sealed class Workshop
         UpdatedAt = now.ToUniversalTime();
     }
 
+    public void RemoveParticipant(int colaboradorId, DateTimeOffset now)
+    {
+        var attendance = _participacoes.SingleOrDefault(item => item.ColaboradorId == colaboradorId);
+        if (attendance is null) return;
+        _participacoes.Remove(attendance);
+        UpdatedAt = now.ToUniversalTime();
+    }
+
+    public void ReplaceParticipants(IEnumerable<Colaborador> colaboradores, DateTimeOffset now)
+    {
+        if (ArchivedAt is not null || colaboradores.Any(item => item.ArchivedAt is not null))
+        {
+            throw new DomainValidationException("Somente registros ativos podem receber participações.");
+        }
+
+        _participacoes.Clear();
+        foreach (var collaborator in colaboradores.DistinctBy(item => item.Id))
+        {
+            _participacoes.Add(new Participacao(collaborator, now));
+        }
+
+        UpdatedAt = now.ToUniversalTime();
+    }
+
+    public void Update(string nome, DateTimeOffset dataRealizacao, string descricao, DateTimeOffset now)
+    {
+        ValidateSchedule(dataRealizacao);
+        Nome = Normalize(nome, 200, "nome");
+        DataRealizacao = dataRealizacao;
+        Descricao = Normalize(descricao, 4000, "descrição");
+        UpdatedAt = now.ToUniversalTime();
+    }
+
+    public void Archive(DateTimeOffset now)
+    {
+        ArchivedAt ??= now.ToUniversalTime();
+        UpdatedAt = now.ToUniversalTime();
+    }
+
+    public void Restore(DateTimeOffset now)
+    {
+        ArchivedAt = null;
+        UpdatedAt = now.ToUniversalTime();
+    }
+
     private static void ValidateSchedule(DateTimeOffset scheduledAt)
     {
         var timezone = TimeZoneInfo.FindSystemTimeZoneById("America/Recife");
