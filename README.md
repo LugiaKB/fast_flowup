@@ -112,9 +112,11 @@ O script:
 Opções do script:
 
 ```bash
-./start.sh --logs      # Inicia e acompanha os logs em tempo real
-./start.sh --mysql     # Inicia utilizando o profile MySQL 8.4
-./start.sh --stop      # Para todos os containers e libera as portas
+./start.sh            # Inicia instantaneamente com as imagens existentes (recomendado)
+./start.sh --build    # Reconstrói as imagens Docker antes de iniciar
+./start.sh --logs     # Inicia e acompanha os logs em tempo real
+./start.sh --mysql    # Inicia utilizando o profile MySQL 8.4
+./start.sh --stop     # Para todos os containers e libera as portas
 ```
 
 ---

@@ -6,7 +6,8 @@
 # validação automática de ambiente, provisionamento de .env e healthcheck.
 #
 # Uso:
-#   ./start.sh            # Inicia tudo em segundo plano e exibe as URLs
+#   ./start.sh            # Inicia instantaneamente com as imagens existentes
+#   ./start.sh --build    # Reconstrói as imagens antes de iniciar
 #   ./start.sh --logs     # Inicia e acompanha os logs em tempo real
 #   ./start.sh --mysql    # Inicia usando o profile MySQL em vez de SQLite
 #   ./start.sh --stop     # Para todos os serviços e libera as portas
@@ -71,19 +72,42 @@ ADMIN_USERNAME="$(grep -E '^ADMIN_USERNAME=' "$ROOT_DIR/.env" | cut -d '=' -f2- 
 ADMIN_PASSWORD="$(grep -E '^ADMIN_PASSWORD=' "$ROOT_DIR/.env" | cut -d '=' -f2- | tr -d '"'\'' ' || echo "Admin@12345678")"
 DATABASE_PROVIDER="$(grep -E '^DATABASE_PROVIDER=' "$ROOT_DIR/.env" | cut -d '=' -f2- | tr -d '"'\'' ' || echo "Sqlite")"
 
-# 4. Determinar profile de banco
+# 4. Tratar argumentos e determinar flags do compose
 COMPOSE_ARGS=()
-if [[ "${1:-}" == "--mysql" || "${DATABASE_PROVIDER:-}" == "MySql" ]]; then
+SHOULD_BUILD=false
+FOLLOW_LOGS=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --build|--rebuild)
+      SHOULD_BUILD=true
+      ;;
+    --mysql)
+      export DATABASE_PROVIDER=MySql
+      ;;
+    --logs|--follow)
+      FOLLOW_LOGS=true
+      ;;
+  esac
+done
+
+if [[ "${DATABASE_PROVIDER:-}" == "MySql" ]]; then
   echo -e "${BLUE}📦 Modo: MySQL 8.4 Profile${NC}"
   COMPOSE_ARGS+=(--profile mysql)
-  export DATABASE_PROVIDER=MySql
 else
   echo -e "${BLUE}📦 Modo: SQLite Padrão (Volume persistente)${NC}"
 fi
 
-# 5. Build e Inicialização dos Containers
-echo -e "${BLUE}🚀 Construindo e subindo containers (Frontend + Backend)...${NC}"
-docker compose "${COMPOSE_ARGS[@]}" up --build -d
+# 5. Inicialização dos Containers (reutiliza imagens existentes por padrão)
+UP_FLAGS=(-d)
+if [[ "$SHOULD_BUILD" == "true" ]]; then
+  echo -e "${BLUE}🔨 Reconstruindo imagens e subindo containers...${NC}"
+  UP_FLAGS=(--build -d)
+else
+  echo -e "${BLUE}🚀 Subindo containers existentes (Frontend + Backend)...${NC}"
+fi
+
+docker compose "${COMPOSE_ARGS[@]}" up "${UP_FLAGS[@]}"
 
 # 6. Aguardar saúde do Backend e Frontend
 echo -e "${YELLOW}⏳ Aguardando serviços responderem...${NC}"
@@ -131,7 +155,7 @@ echo -e "    • Rodar testes E2E reais:   ${CYAN}cd frontend && npm run test:e2
 echo -e "${BOLD}${GREEN}=================================================================${NC}"
 echo ""
 
-if [[ "${1:-}" == "--logs" || "${1:-}" == "--follow" ]]; then
+if [[ "$FOLLOW_LOGS" == "true" ]]; then
   echo -e "${BLUE}Acompanhando logs em tempo real (Pressione Ctrl+C para sair da visualização):${NC}"
   docker compose "${COMPOSE_ARGS[@]}" logs -f
 fi
