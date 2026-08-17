@@ -1,4 +1,5 @@
 import type { components } from "./schema";
+import { getApiRuntimeConfig } from "./runtime";
 
 export type ProblemDetails = components["schemas"]["ProblemDetails"];
 
@@ -75,6 +76,7 @@ export async function apiRequest<T>(
   path: string,
   { body, baseUrl, headers: initialHeaders, ...init }: ApiRequestOptions = {},
 ): Promise<T> {
+  const runtime = getApiRuntimeConfig();
   const headers = new Headers(initialHeaders);
   headers.set("Accept", "application/json, application/problem+json");
 
@@ -84,7 +86,7 @@ export async function apiRequest<T>(
     requestBody = JSON.stringify(body);
   }
 
-  const response = await fetch(`${baseUrl ?? process.env.NEXT_PUBLIC_API_URL ?? ""}${path}`, {
+  const response = await fetch(`${baseUrl ?? runtime.baseUrl}${path}`, {
     ...init,
     body: requestBody,
     credentials: init.credentials ?? "include",

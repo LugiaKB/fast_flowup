@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { Button, Card, TextField } from "@/components/ui";
-import { DEMO_ADMIN_CREDENTIALS } from "@/features/auth/demo-credentials";
 import { useAuth } from "@/features/auth/auth-provider";
 
 const GENERIC_LOGIN_ERROR =
@@ -84,15 +83,6 @@ export default function LoginPage() {
           </form>
         </Card>
 
-        {process.env.NEXT_PUBLIC_API_MODE === "mock" && (
-          <aside className="mt-6 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700">
-            <p className="font-semibold text-gray-900">Acesso de demonstração</p>
-            <p className="mt-1">Qualquer nome de usuário e senha não vazios são aceitos.</p>
-            <p className="mt-2 break-all">
-              Exemplo: {DEMO_ADMIN_CREDENTIALS.username} / {DEMO_ADMIN_CREDENTIALS.password}
-            </p>
-          </aside>
-        )}
       </div>
     </main>
   );
