@@ -4,11 +4,15 @@
   --color-primary: #6b4cff;
   --color-primary-hover: #5a3bdf;
   --color-primary-light: #8b7aff;
+  --color-primary-subtle: #ede9fe;
   --color-accent: #f97316;
   --color-accent-hover: #ea580c;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+  --color-error-hover: #991b1b;
+  --color-error-strong: #b91c1c;
+  --color-error-subtle: #fee2e2;
   --color-info: #3b82f6;
   --color-white: #ffffff;
   --color-black: #000000;
