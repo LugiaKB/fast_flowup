@@ -16,6 +16,7 @@ if (Encoding.UTF8.GetByteCount(signingKey) < 32)
 {
     throw new InvalidOperationException("JWT_SIGNING_KEY deve ter ao menos 32 bytes.");
 }
+builder.Configuration["JWT_SIGNING_KEY"] = signingKey;
 
 builder.Services.AddProblemDetails();
 builder.Services.AddValidation();
@@ -73,6 +74,7 @@ app.MapOpenApi();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapAuthenticationEndpoints();
 app.MapGet("/api/auth/me", (ClaimsPrincipal user) => Results.Ok(new
     {
         id = user.FindFirstValue(ClaimTypes.NameIdentifier),

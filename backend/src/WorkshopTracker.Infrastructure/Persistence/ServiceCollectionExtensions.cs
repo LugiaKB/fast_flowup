@@ -48,6 +48,7 @@ public static class ServiceCollectionExtensions
         })
         .AddEntityFrameworkStores<WorkshopTrackerDbContext>();
         services.AddScoped<JwtTokenService>();
+        services.AddSingleton<RefreshTokenService>();
 
         return services;
     }

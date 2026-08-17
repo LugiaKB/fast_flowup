@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Identity;
 using WorkshopTracker.Domain.Colaboradores;
 using WorkshopTracker.Domain.Workshops;
+using WorkshopTracker.Infrastructure.Authentication;
 using WorkshopTracker.Infrastructure.Persistence;
 
 namespace WorkshopTracker.Api.IntegrationTests;
@@ -61,6 +63,17 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
         await database.Colaboradores.AddRangeAsync(colaboradores);
         await database.Workshops.AddRangeAsync(workshops);
         await database.SaveChangesAsync();
+    }
+
+    public async Task CreateAdministratorAsync(
+        string username = "administrator",
+        string password = "StrongPassword123")
+    {
+        await using var scope = Services.CreateAsyncScope();
+        var users = scope.ServiceProvider.GetRequiredService<UserManager<Administrator>>();
+        var administrator = new Administrator { UserName = username };
+        var result = await users.CreateAsync(administrator, password);
+        Assert.True(result.Succeeded, string.Join(", ", result.Errors.Select(error => error.Description)));
     }
 
     private static void DeleteIfPresent(string path)
