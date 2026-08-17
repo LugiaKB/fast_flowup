@@ -21,9 +21,15 @@
     "generate:api": "openapi-typescript ../specs/001-workshop-participation/contracts/openapi.yaml -o src/lib/api/schema.d.ts"
   },
   "dependencies": {
+    "@radix-ui/react-alert-dialog": "^1.1.23",
+    "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-toast": "^1.2.23",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.31.0",
     "next": "^16.3.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
