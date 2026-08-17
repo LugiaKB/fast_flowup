@@ -15,6 +15,7 @@ public sealed class WorkshopTrackerDbContext(DbContextOptions<WorkshopTrackerDbC
     public DbSet<Workshop> Workshops => Set<Workshop>();
     public DbSet<Participacao> Participacoes => Set<Participacao>();
     public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
+    public DbSet<WorkshopArchiveEvent> WorkshopArchiveEvents => Set<WorkshopArchiveEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,5 +60,12 @@ public sealed class WorkshopTrackerDbContext(DbContextOptions<WorkshopTrackerDbC
         refreshSession.Property(item => item.TokenHash).HasMaxLength(64).IsRequired();
         refreshSession.HasIndex(item => item.TokenHash).IsUnique();
         refreshSession.HasIndex(item => item.FamilyId);
+
+        var archiveEvent = modelBuilder.Entity<WorkshopArchiveEvent>();
+        archiveEvent.ToTable("WorkshopArchiveEvents");
+        archiveEvent.HasKey(item => item.Id);
+        archiveEvent.Property(item => item.ArchivedByAdminId).HasMaxLength(450).IsRequired();
+        archiveEvent.Property(item => item.Reason).HasConversion<string>().HasMaxLength(32).IsRequired();
+        archiveEvent.HasIndex(item => item.WorkshopId);
     }
 }
