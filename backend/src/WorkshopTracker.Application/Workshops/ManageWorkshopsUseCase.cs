@@ -60,6 +60,25 @@ public sealed class ManageWorkshopsUseCase(IWorkshopCommandRepository repository
         await repository.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    public async Task<bool> ArchiveAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var workshop = await repository.FindByIdAsync(id, cancellationToken);
+        if (workshop is null) return false;
+        workshop.Archive(clock.UtcNow);
+        await repository.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<WorkshopResult> RestoreAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var workshop = await repository.FindByIdAsync(id, cancellationToken);
+        if (workshop is null) return WorkshopResult.NotFound();
+        if (await repository.HasActiveWorkshopInQuarterAsync(workshop.DataRealizacao, id, cancellationToken)) return WorkshopResult.Conflict();
+        workshop.Restore(clock.UtcNow);
+        await repository.SaveChangesAsync(cancellationToken);
+        return WorkshopResult.Success(workshop);
+    }
 }
 
 public sealed record WorkshopResult(Workshop? Workshop, string? Error)

@@ -64,6 +64,18 @@ public static class WorkshopsEndpoints
         .WithTags("Workshops")
         .RequireAuthorization();
 
+        endpoints.MapDelete("/api/workshops/{id:int}", async (int id, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
+            await useCase.ArchiveAsync(id, cancellationToken) ? Results.NoContent() : NotFound())
+        .WithName("archiveWorkshop")
+        .WithTags("Workshops")
+        .RequireAuthorization();
+
+        endpoints.MapPost("/api/workshops/{id:int}/restaurar", async (int id, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
+            ToCommandResult(await useCase.RestoreAsync(id, cancellationToken), false))
+        .WithName("restoreWorkshop")
+        .WithTags("Workshops")
+        .RequireAuthorization();
+
         endpoints.MapPut("/api/workshops/{id:int}/participantes", async (int id, ReplaceParticipantesRequest request, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
             ToCommandResult(await useCase.ReplaceParticipantsAsync(id, request.ColaboradorIds, cancellationToken), false))
         .WithName("replaceParticipantes")
