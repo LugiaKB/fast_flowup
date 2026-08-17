@@ -20,6 +20,10 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
+    depends_on:
+      mysql:
+        condition: service_healthy
+        required: false
 
   frontend:
     build:
