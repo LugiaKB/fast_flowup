@@ -163,6 +163,25 @@ export const workshopsHandlers = [
     const input = (await request.json()) as CreateWorkshopRequest;
     const invalid = validateInput(input);
     if (invalid) return invalid;
+    const collaboratorIds = input.colaboradorIds ?? [];
+    if (
+      !Array.isArray(collaboratorIds) ||
+      collaboratorIds.some((id) => !Number.isInteger(id) || id < 1) ||
+      new Set(collaboratorIds).size !== collaboratorIds.length
+    ) {
+      return problemResponse(400, "validation_error", "A lista de participantes é inválida");
+    }
+    const participants = collaboratorIds.map(findMockColaborador);
+    if (participants.some((participant) => !participant)) {
+      return problemResponse(404, "collaborator_not_found", "Colaborador não encontrado");
+    }
+    if (participants.some((participant) => participant?.status !== "active")) {
+      return problemResponse(
+        409,
+        "inactive_collaborator",
+        "Todos os participantes iniciais devem estar ativos",
+      );
+    }
 
     if (input.substituiWorkshopId) {
       const predecessor = findMockWorkshop(input.substituiWorkshopId);
@@ -177,7 +196,10 @@ export const workshopsHandlers = [
       }
     }
 
-    const workshop = createMockWorkshop(input);
+    const workshop = createMockWorkshop(
+      input,
+      participants.filter((item): item is NonNullable<typeof item> => Boolean(item)),
+    );
     return HttpResponse.json(workshop, {
       status: 201,
       headers: { Location: `/api/workshops/${workshop.id}` },

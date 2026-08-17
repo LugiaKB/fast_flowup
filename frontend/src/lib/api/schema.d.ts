@@ -270,6 +270,8 @@ export interface components {
             descricao: string;
         };
         CreateWorkshopRequest: components["schemas"]["WorkshopInput"] & {
+            /** @description Active collaborators initially associated with the workshop */
+            colaboradorIds?: number[];
             substituiWorkshopId?: number | null;
         };
         WorkshopSummary: {

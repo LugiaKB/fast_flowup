@@ -20,6 +20,11 @@ export function useApiQuery<T>(requestPath: string | null, requester: ApiRequest
     error: null,
   });
   const refetch = useCallback(() => setRevision((current) => current + 1), []);
+  const updateData = useCallback((updater: (current: T) => T) => {
+    setState((current) =>
+      current.data === null ? current : { ...current, data: updater(current.data) },
+    );
+  }, []);
   const requestKey = requestPath ? `${requestPath}#${revision}` : null;
 
   useEffect(() => {
@@ -37,7 +42,7 @@ export function useApiQuery<T>(requestPath: string | null, requester: ApiRequest
     return () => controller.abort();
   }, [requestKey, requestPath, requester]);
 
-  if (!requestKey) return { data: null, error: null, isLoading: false, refetch };
+  if (!requestKey) return { data: null, error: null, isLoading: false, refetch, updateData };
 
   const current = state.requestKey === requestKey;
   return {
@@ -45,5 +50,6 @@ export function useApiQuery<T>(requestPath: string | null, requester: ApiRequest
     error: current ? state.error : null,
     isLoading: !current,
     refetch,
+    updateData,
   };
 }

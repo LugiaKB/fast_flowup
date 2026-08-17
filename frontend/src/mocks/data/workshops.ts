@@ -56,7 +56,10 @@ export function findMockWorkshop(id: number) {
   return records.find((record) => record.id === id);
 }
 
-export function createMockWorkshop(input: CreateWorkshopRequest) {
+export function createMockWorkshop(
+  input: CreateWorkshopRequest,
+  participantes: WorkshopDetail["participantes"] = [],
+) {
   const record: WorkshopDetail = {
     id: nextId,
     nome: input.nome.trim(),
@@ -64,8 +67,8 @@ export function createMockWorkshop(input: CreateWorkshopRequest) {
     dataRealizacao: input.dataRealizacao,
     dataTermino: endTimestamp(input.dataRealizacao),
     status: "active",
-    participantCount: 0,
-    participantes: [],
+    participantCount: participantes.length,
+    participantes: [...participantes],
     archiveEvents: [],
   };
   nextId += 1;

@@ -42,7 +42,7 @@ export function ApiRuntimeGate({ children }: { children: ReactNode }) {
 
   if (!ready) {
     return (
-      <p role="status" className="p-6 text-center text-gray-700">
+      <p role="status" className="p-6 text-center text-body">
         Preparando dados de demonstração…
       </p>
     );

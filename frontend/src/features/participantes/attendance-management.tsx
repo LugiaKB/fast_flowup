@@ -1,14 +1,15 @@
 "use client";
 
 import { Plus, Trash2, Users } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import { Button, Sheet, useToast } from "@/components/ui";
+import { Button, ConfirmDialog, Sheet, useToast } from "@/components/ui";
 import { useAuth } from "@/features/auth/auth-provider";
 import { useColaboradores } from "@/features/colaboradores/use-colaboradores";
 import type { components } from "@/lib/api/schema";
 
 import { useAttendanceMutations } from "./use-attendance-mutations";
+import { ParticipantSelection } from "./participant-selection";
 
 type Colaborador = components["schemas"]["Colaborador"];
 
@@ -19,32 +20,38 @@ export function AttendanceManagement({
 }: {
   workshopId: number;
   participantes: Colaborador[];
-  onChanged: () => void;
+  onChanged: (participantes: Colaborador[]) => void;
 }) {
   const { request } = useAuth();
   const { add, remove, replace } = useAttendanceMutations(workshopId);
   const { notify } = useToast();
-  const { data, isLoading } = useColaboradores({
-    query: "",
+  const [query, setQuery] = useState("");
+  const { data, error: queryError, isLoading, refetch } = useColaboradores({
+    query,
     offset: 0,
     limit: 100,
     status: "active",
     requester: request,
   });
   const [open, setOpen] = useState(false);
+  const [currentParticipants, setCurrentParticipants] = useState(participantes);
   const [selected, setSelected] = useState<number[]>([]);
   const [addId, setAddId] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string>();
   const allCollaborators = data?.items ?? [];
-  const currentIds = new Set(participantes.map(({ id }) => id));
-  const available = allCollaborators.filter(({ id }) => !currentIds.has(id));
+  const currentIds = useMemo(
+    () => new Set(currentParticipants.map(({ id }) => id)),
+    [currentParticipants],
+  );
 
   function handleOpenChange(nextOpen: boolean) {
     setOpen(nextOpen);
     if (nextOpen) {
+      setCurrentParticipants(participantes);
       setSelected(participantes.map(({ id }) => id));
       setAddId("");
+      setQuery("");
       setError(undefined);
     }
   }
@@ -53,10 +60,11 @@ export function AttendanceManagement({
     setSaving(true);
     setError(undefined);
     try {
-      await replace(selected);
+      const updated = await replace(selected);
+      setCurrentParticipants(updated.participantes);
+      setSelected(updated.participantes.map(({ id }) => id));
+      onChanged(updated.participantes);
       notify({ title: "Participantes atualizados" });
-      setOpen(false);
-      onChanged();
     } catch {
       setError("Não foi possível atualizar os participantes.");
     } finally {
@@ -66,14 +74,22 @@ export function AttendanceManagement({
 
   async function handleAdd() {
     if (!addId) return;
+    const collaborator = allCollaborators.find(({ id }) => id === Number(addId));
+    if (!collaborator || currentIds.has(collaborator.id)) return;
     setSaving(true);
     setError(undefined);
     try {
       await add(Number(addId));
+      const updated = [...currentParticipants, collaborator].toSorted((left, right) =>
+        left.nome.localeCompare(right.nome, "pt-BR"),
+      );
+      setCurrentParticipants(updated);
+      setSelected((current) =>
+        current.includes(collaborator.id) ? current : [...current, collaborator.id],
+      );
+      onChanged(updated);
       setAddId("");
       notify({ title: "Participante adicionado" });
-      setOpen(false);
-      onChanged();
     } catch {
       setError("Não foi possível adicionar o participante.");
     } finally {
@@ -86,10 +102,11 @@ export function AttendanceManagement({
     setError(undefined);
     try {
       await remove(id);
+      const updated = currentParticipants.filter((participant) => participant.id !== id);
+      setCurrentParticipants(updated);
       setSelected((current) => current.filter((candidate) => candidate !== id));
+      onChanged(updated);
       notify({ title: "Participante removido" });
-      setOpen(false);
-      onChanged();
     } catch {
       setError("Não foi possível remover o participante.");
     } finally {
@@ -116,36 +133,28 @@ export function AttendanceManagement({
             {error}
           </p>
         )}
-        <fieldset className="grid gap-3" disabled={isLoading || saving}>
-          <legend className="mb-2 font-heading text-lg font-semibold text-gray-900">
-            Lista completa
-          </legend>
-          {allCollaborators.map((colaborador) => (
-            <label
-              key={colaborador.id}
-              className="flex min-h-11 items-center gap-3 rounded-lg border border-gray-200 px-4 py-2"
-            >
-              <input
-                type="checkbox"
-                checked={selected.includes(colaborador.id)}
-                onChange={(event) =>
-                  setSelected((current) =>
-                    event.target.checked
-                      ? [...current, colaborador.id]
-                      : current.filter((id) => id !== colaborador.id),
-                  )
-                }
-                className="size-5 accent-primary"
-              />
-              {colaborador.nome}
-            </label>
-          ))}
+        <ParticipantSelection
+          idPrefix="attendance"
+          title="Lista completa"
+          searchLabel="Buscar colaboradores"
+          query={query}
+          onQueryChange={setQuery}
+          selectedIds={selected}
+          onSelectedIdsChange={setSelected}
+          items={allCollaborators}
+          isLoading={isLoading}
+          error={queryError}
+          onRetry={refetch}
+          disabled={saving}
+          emptyMessage="Nenhum colaborador encontrado."
+        />
+        <div>
           <Button onClick={() => void handleReplace()} disabled={saving || isLoading}>
             {saving ? "Salvando…" : "Salvar participantes"}
           </Button>
-        </fieldset>
+        </div>
 
-        <section aria-labelledby="quick-attendance" className="grid gap-4 border-t border-gray-200 pt-6">
+        <section aria-labelledby="quick-attendance" className="grid gap-4 border-t border-border pt-6">
           <h3 id="quick-attendance" className="text-lg font-semibold">
             Ajustes individuais
           </h3>
@@ -158,11 +167,11 @@ export function AttendanceManagement({
               value={addId}
               disabled={saving}
               onChange={(event) => setAddId(event.target.value)}
-              className="min-h-12 rounded-lg border border-gray-300 bg-white px-4"
+              className="min-h-12 rounded-lg border border-border bg-surface px-4 text-strong"
             >
               <option value="">Selecione</option>
-              {available.map(({ id, nome }) => (
-                <option key={id} value={id}>
+              {allCollaborators.map(({ id, nome }) => (
+                <option key={id} value={id} disabled={currentIds.has(id)}>
                   {nome}
                 </option>
               ))}
@@ -177,19 +186,26 @@ export function AttendanceManagement({
             </Button>
           </div>
           <ul className="grid gap-2">
-            {participantes.map(({ id, nome }) => (
-              <li key={id} className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 p-3">
+            {currentParticipants.map(({ id, nome }) => (
+              <li key={id} className="flex items-center justify-between gap-3 rounded-lg bg-surface-subtle p-3">
                 <span>{nome}</span>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  disabled={saving}
-                  aria-label={`Remover ${nome}`}
-                  onClick={() => void handleRemove(id)}
-                >
-                  <Trash2 aria-hidden="true" className="size-5" />
-                  Remover
-                </Button>
+                <ConfirmDialog
+                  title={`Remover ${nome}?`}
+                  description="A participação será removida deste workshop."
+                  confirmLabel="Remover"
+                  onConfirm={() => void handleRemove(id)}
+                  trigger={
+                    <Button
+                      size="sm"
+                      variant="danger"
+                      disabled={saving}
+                      aria-label={`Remover ${nome}`}
+                    >
+                      <Trash2 aria-hidden="true" className="size-5" />
+                      Remover
+                    </Button>
+                  }
+                />
               </li>
             ))}
           </ul>

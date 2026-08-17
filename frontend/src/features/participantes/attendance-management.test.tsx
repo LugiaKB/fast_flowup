@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { delay, http, HttpResponse } from "msw";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import WorkshopDetailPage from "@/app/workshops/[id]/page";
@@ -10,6 +11,7 @@ import {
   type AdminSummary,
 } from "@/features/auth/auth-client";
 import { apiRequest } from "@/lib/api/client";
+import { server } from "@/mocks/server";
 
 const auth = vi.hoisted(() => ({
   admin: { id: "admin-1", username: "gestor" } as AdminSummary | undefined,
@@ -42,7 +44,7 @@ beforeEach(async () => {
 afterEach(() => vi.unstubAllEnvs());
 
 describe("attendance management", () => {
-  it("replaces attendance and supports individual add and remove operations", async () => {
+  it("searches collaborators without losing the selection or offering duplicates", async () => {
     const user = userEvent.setup();
     render(
       <ToastProvider>
@@ -53,28 +55,113 @@ describe("attendance management", () => {
 
     await user.click(screen.getByRole("button", { name: "Gerenciar participantes" }));
     const dialog = screen.getByRole("dialog", { name: "Gerenciar participantes" });
-    await user.click(within(dialog).getByRole("checkbox", { name: "Ana Beatriz" }));
+    expect(
+      within(dialog).getByRole("option", { name: "Ana Beatriz" }),
+    ).toBeDisabled();
+
+    await user.type(within(dialog).getByRole("searchbox", { name: "Buscar colaboradores" }), "Helena");
+    expect(await within(dialog).findByRole("checkbox", { name: "Helena Martins" })).toBeVisible();
+    expect(within(dialog).queryByRole("checkbox", { name: "Ana Beatriz" })).not.toBeInTheDocument();
     await user.click(within(dialog).getByRole("checkbox", { name: "Helena Martins" }));
+
+    await user.clear(within(dialog).getByRole("searchbox", { name: "Buscar colaboradores" }));
+    expect(await within(dialog).findByRole("checkbox", { name: "Ana Beatriz" })).toBeChecked();
+    expect(within(dialog).getByRole("checkbox", { name: "Helena Martins" })).toBeChecked();
     await user.click(within(dialog).getByRole("button", { name: "Salvar participantes" }));
 
-    await waitFor(() =>
-      expect(screen.queryByRole("heading", { name: "Ana Beatriz" })).not.toBeInTheDocument(),
+    expect(screen.getByRole("dialog", { name: "Gerenciar participantes" })).toBeVisible();
+    expect(
+      within(dialog).getByRole("button", { name: "Remover Helena Martins" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Helena Martins", hidden: true }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Participantes atualizados")).toBeInTheDocument();
+  }, 15_000);
+
+  it("adds and removes participants immediately while preserving the open panel", async () => {
+    const user = userEvent.setup();
+    render(
+      <ToastProvider>
+        <WorkshopDetailPage />
+      </ToastProvider>,
     );
-    expect(await screen.findByRole("heading", { name: "Helena Martins" })).toBeInTheDocument();
+    await screen.findByRole("heading", { name: "Ana Beatriz" });
 
     await user.click(screen.getByRole("button", { name: "Gerenciar participantes" }));
-    const quickDialog = screen.getByRole("dialog", { name: "Gerenciar participantes" });
-    await user.click(within(quickDialog).getByRole("button", { name: "Remover Carlos Eduardo" }));
+    const dialog = screen.getByRole("dialog", { name: "Gerenciar participantes" });
+    await user.type(within(dialog).getByRole("searchbox", { name: "Buscar colaboradores" }), "Larissa");
+    await user.selectOptions(
+      within(dialog).getByLabelText("Colaborador para adicionar"),
+      "7",
+    );
+    await user.click(within(dialog).getByRole("button", { name: "Adicionar participante" }));
+
+    expect(screen.getByRole("dialog", { name: "Gerenciar participantes" })).toBeVisible();
+    expect(
+      within(dialog).getByRole("button", { name: "Remover Larissa Gomes" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Larissa Gomes", hidden: true }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Quantidade de participantes", { selector: "p" }),
+    ).toHaveTextContent("5 participantes");
+    expect(await screen.findByText("Participante adicionado")).toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: "Remover Carlos Eduardo" }));
+    const confirmation = screen.getByRole("alertdialog", { name: "Remover Carlos Eduardo?" });
+    await user.click(within(confirmation).getByRole("button", { name: "Remover" }));
+
+    expect(screen.getByRole("dialog", { name: "Gerenciar participantes" })).toBeVisible();
     await waitFor(() =>
       expect(screen.queryByRole("heading", { name: "Carlos Eduardo" })).not.toBeInTheDocument(),
     );
-
-    await user.click(await screen.findByRole("button", { name: "Gerenciar participantes" }));
-    const addDialog = screen.getByRole("dialog", { name: "Gerenciar participantes" });
-    await user.selectOptions(within(addDialog).getByLabelText("Colaborador para adicionar"), "7");
-    await user.click(within(addDialog).getByRole("button", { name: "Adicionar participante" }));
-    expect(await screen.findByRole("heading", { name: "Larissa Gomes" })).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: "Remover Carlos Eduardo" })).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Quantidade de participantes", { selector: "p" }),
+    ).toHaveTextContent("4 participantes");
+    expect(await screen.findByText("Participante removido")).toBeInTheDocument();
   }, 15_000);
+
+  it("shows loading and recoverable error feedback while searching", async () => {
+    const user = userEvent.setup();
+    let attempts = 0;
+    server.use(
+      http.get("*/api/colaboradores", async ({ request }) => {
+        if (new URL(request.url).searchParams.get("query") !== "Falha") return;
+        attempts += 1;
+        await delay(100);
+        if (attempts === 1) {
+          return HttpResponse.json(
+            { title: "Falha simulada", status: 500 },
+            { status: 500 },
+          );
+        }
+        return HttpResponse.json({ items: [], totalItems: 0, offset: 0, limit: 100 });
+      }),
+    );
+    render(
+      <ToastProvider>
+        <WorkshopDetailPage />
+      </ToastProvider>,
+    );
+    await screen.findByRole("heading", { name: "Ana Beatriz" });
+    await user.click(screen.getByRole("button", { name: "Gerenciar participantes" }));
+    const dialog = screen.getByRole("dialog", { name: "Gerenciar participantes" });
+
+    await user.type(within(dialog).getByRole("searchbox", { name: "Buscar colaboradores" }), "Falha");
+    expect(within(dialog).getByRole("status", { name: "" })).toHaveTextContent(
+      "Buscando colaboradores",
+    );
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+      "Não foi possível buscar colaboradores",
+    );
+
+    await user.click(within(dialog).getByRole("button", { name: "Tentar novamente" }));
+    expect(await within(dialog).findByText("Nenhum colaborador encontrado.")).toBeInTheDocument();
+    expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument();
+  });
 
   it("keeps attendance controls absent for visitors", async () => {
     auth.status = "visitor";
