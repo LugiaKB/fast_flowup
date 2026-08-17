@@ -52,7 +52,8 @@ public static class AdminSeeder
     {
         if (!result.Succeeded)
         {
-            throw new InvalidOperationException(message);
+            var errors = string.Join("; ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));
+            throw new InvalidOperationException($"{message} Detalhes: {errors}");
         }
     }
 }
