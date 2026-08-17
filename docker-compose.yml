@@ -16,7 +16,7 @@ services:
     volumes:
       - sqlite-data:/data
     healthcheck:
-      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:8080/health"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health > /dev/null || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 10
@@ -32,6 +32,10 @@ services:
       args:
         NEXT_PUBLIC_API_MODE: api
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_MODE: api
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
     ports:
       - "3000:3000"
     depends_on:
