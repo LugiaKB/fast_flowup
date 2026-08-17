@@ -241,22 +241,22 @@ existing OpenAPI operations and leave a revalidated interface after a partial fa
 
 ## Phase 12: Backend User Story 3 - Autenticar administrador
 
-- [ ] T063 [P] [US3] Write failing token rotation, reuse and seed tests in `backend/tests/WorkshopTracker.Application.Tests/AuthenticationTests.cs`
-- [ ] T064 [P] [US3] Write failing auth HTTP/CORS tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/AuthenticationTests.cs`
-- [ ] T065 [US3] Implement RefreshSession model and auth ports in `backend/src/WorkshopTracker.Domain/Authentication/` and `backend/src/WorkshopTracker.Application/Authentication/`
-- [ ] T066 [US3] Implement Identity, JWT, hashed refresh rotation and session revocation in `backend/src/WorkshopTracker.Infrastructure/Authentication/`
-- [ ] T067 [US3] Implement validated idempotent administrator synchronization in `backend/src/WorkshopTracker.Infrastructure/Identity/AdminSeeder.cs`
-- [ ] T068 [US3] Map identity/refresh storage and create provider migrations in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
-- [ ] T069 [US3] Implement login, refresh, logout and me endpoints in `backend/src/WorkshopTracker.Api/Endpoints/AuthEndpoints.cs`
+- [X] T063 [P] [US3] Write failing token rotation, reuse and seed tests in `backend/tests/WorkshopTracker.Application.Tests/AuthenticationTests.cs`
+- [X] T064 [P] [US3] Write failing auth HTTP/CORS tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/AuthenticationTests.cs`
+- [X] T065 [US3] Implement RefreshSession model and auth ports in `backend/src/WorkshopTracker.Domain/Authentication/` and `backend/src/WorkshopTracker.Application/Authentication/`
+- [X] T066 [US3] Implement Identity, JWT, hashed refresh rotation and session revocation in `backend/src/WorkshopTracker.Infrastructure/Authentication/`
+- [X] T067 [US3] Implement validated idempotent administrator synchronization in `backend/src/WorkshopTracker.Infrastructure/Authentication/AdminSeeder.cs`
+- [X] T068 [US3] Map identity/refresh storage and create provider migrations in `backend/src/WorkshopTracker.Infrastructure/Persistence/`
+- [X] T069 [US3] Implement login, refresh, logout and me endpoints in `backend/src/WorkshopTracker.Api/Endpoints/AuthenticationEndpoints.cs`
 
 ---
 
 ## Phase 13: Backend User Story 4 - Administrar colaboradores
 
-- [ ] T070 [P] [US4] Write failing collaborator command tests in `backend/tests/WorkshopTracker.Application.Tests/ColaboradorCommandTests.cs`
-- [ ] T071 [P] [US4] Write failing authorized collaborator HTTP tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/ColaboradoresCommandTests.cs`
-- [ ] T072 [US4] Implement create/update/archive/restore use cases in `backend/src/WorkshopTracker.Application/Colaboradores/Commands/`
-- [ ] T073 [US4] Add authenticated collaborator mutations to `backend/src/WorkshopTracker.Api/Endpoints/ColaboradoresEndpoints.cs`
+- [X] T070 [P] [US4] Write failing collaborator command tests in `backend/tests/WorkshopTracker.Application.Tests/ColaboradorCommandTests.cs`
+- [X] T071 [P] [US4] Write failing authorized collaborator HTTP tests in `backend/tests/WorkshopTracker.Api.IntegrationTests/ColaboradoresCommandTests.cs`
+- [X] T072 [US4] Implement create/update/archive/restore use cases in `backend/src/WorkshopTracker.Application/Colaboradores/`
+- [X] T073 [US4] Add authenticated collaborator mutations to `backend/src/WorkshopTracker.Api/Endpoints/ColaboradoresEndpoints.cs`
 
 ---
 
