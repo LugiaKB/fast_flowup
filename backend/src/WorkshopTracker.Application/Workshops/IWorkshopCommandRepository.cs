@@ -9,5 +9,7 @@ public interface IWorkshopCommandRepository
     Task<Workshop?> FindByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<Colaborador>> FindActiveCollaboratorsAsync(IReadOnlyCollection<int> ids, CancellationToken cancellationToken = default);
     Task<bool> HasActiveWorkshopInQuarterAsync(DateTimeOffset scheduledAt, int? excludingWorkshopId, CancellationToken cancellationToken = default);
+    Task AddArchiveEventAsync(WorkshopArchiveEvent archiveEvent, CancellationToken cancellationToken = default);
+    Task MarkLatestArchiveEventRestoredAsync(int workshopId, DateTimeOffset restoredAt, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

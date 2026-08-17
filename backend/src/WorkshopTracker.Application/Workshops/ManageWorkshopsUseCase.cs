@@ -61,11 +61,12 @@ public sealed class ManageWorkshopsUseCase(IWorkshopCommandRepository repository
         return true;
     }
 
-    public async Task<bool> ArchiveAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<bool> ArchiveAsync(int id, WorkshopArchiveReason reason, string administratorId, int? replacementWorkshopId, CancellationToken cancellationToken = default)
     {
         var workshop = await repository.FindByIdAsync(id, cancellationToken);
         if (workshop is null) return false;
         workshop.Archive(clock.UtcNow);
+        await repository.AddArchiveEventAsync(WorkshopArchiveEvent.Create(id, reason, administratorId, replacementWorkshopId, clock.UtcNow), cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -76,6 +77,7 @@ public sealed class ManageWorkshopsUseCase(IWorkshopCommandRepository repository
         if (workshop is null) return WorkshopResult.NotFound();
         if (await repository.HasActiveWorkshopInQuarterAsync(workshop.DataRealizacao, id, cancellationToken)) return WorkshopResult.Conflict();
         workshop.Restore(clock.UtcNow);
+        await repository.MarkLatestArchiveEventRestoredAsync(id, clock.UtcNow, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
         return WorkshopResult.Success(workshop);
     }

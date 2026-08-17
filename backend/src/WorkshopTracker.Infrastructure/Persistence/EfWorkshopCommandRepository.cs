@@ -30,4 +30,16 @@ public sealed class EfWorkshopCommandRepository(WorkshopTrackerDbContext databas
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default) => database.SaveChangesAsync(cancellationToken);
+
+    public Task AddArchiveEventAsync(WorkshopArchiveEvent archiveEvent, CancellationToken cancellationToken = default) =>
+        database.WorkshopArchiveEvents.AddAsync(archiveEvent, cancellationToken).AsTask();
+
+    public async Task MarkLatestArchiveEventRestoredAsync(int workshopId, DateTimeOffset restoredAt, CancellationToken cancellationToken = default)
+    {
+        var archiveEvent = await database.WorkshopArchiveEvents
+            .Where(item => item.WorkshopId == workshopId && item.RestoredAt == null)
+            .OrderByDescending(item => item.ArchivedAt)
+            .FirstOrDefaultAsync(cancellationToken);
+        archiveEvent?.MarkRestored(restoredAt);
+    }
 }

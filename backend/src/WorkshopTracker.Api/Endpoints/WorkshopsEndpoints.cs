@@ -1,4 +1,6 @@
 using WorkshopTracker.Application.Workshops;
+using System.Security.Claims;
+using WorkshopTracker.Domain.Workshops;
 
 namespace WorkshopTracker.Api.Endpoints;
 
@@ -64,8 +66,8 @@ public static class WorkshopsEndpoints
         .WithTags("Workshops")
         .RequireAuthorization();
 
-        endpoints.MapDelete("/api/workshops/{id:int}", async (int id, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
-            await useCase.ArchiveAsync(id, cancellationToken) ? Results.NoContent() : NotFound())
+        endpoints.MapDelete("/api/workshops/{id:int}", async (int id, ArchiveWorkshopRequest request, ClaimsPrincipal user, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
+            await useCase.ArchiveAsync(id, request.Reason, user.FindFirstValue(ClaimTypes.NameIdentifier)!, request.SubstituiWorkshopId, cancellationToken) ? Results.NoContent() : NotFound())
         .WithName("archiveWorkshop")
         .WithTags("Workshops")
         .RequireAuthorization();
@@ -159,4 +161,5 @@ public static class WorkshopsEndpoints
     public sealed record WorkshopInput(string Nome, DateTimeOffset DataRealizacao, string Descricao);
     public sealed record CreateWorkshopRequest(string Nome, DateTimeOffset DataRealizacao, string Descricao, IReadOnlyCollection<int>? ColaboradorIds);
     public sealed record ReplaceParticipantesRequest(IReadOnlyCollection<int> ColaboradorIds);
+    public sealed record ArchiveWorkshopRequest(WorkshopArchiveReason Reason, int? SubstituiWorkshopId);
 }
