@@ -45,7 +45,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center">
           <h1 className="text-3xl font-bold sm:text-4xl">Acesso administrativo</h1>
-          <p className="mt-3 text-gray-700">
+          <p className="mt-3 text-body">
             Entre para criar, editar e arquivar os dados da aplicação.
           </p>
         </div>

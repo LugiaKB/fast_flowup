@@ -4,6 +4,7 @@ import { axe } from "jest-axe";
 import { beforeEach, vi } from "vitest";
 
 import { Header } from "./header";
+import { ThemeProvider } from "@/features/theme/theme-provider";
 
 const auth = vi.hoisted(() => ({
   admin: undefined as { id: string; username: string } | undefined,
@@ -20,9 +21,17 @@ beforeEach(() => {
   auth.status = "visitor";
 });
 
+function renderHeader() {
+  return render(
+    <ThemeProvider>
+      <Header />
+    </ThemeProvider>,
+  );
+}
+
 describe("Header", () => {
   it("marks the current public route", () => {
-    render(<Header />);
+    renderHeader();
 
     const currentLinks = screen
       .getAllByText("Workshops")
@@ -36,7 +45,7 @@ describe("Header", () => {
 
   it("closes the mobile menu with Escape and restores focus", async () => {
     const user = userEvent.setup();
-    render(<Header />);
+    renderHeader();
     const trigger = screen.getByRole("button", { name: "Abrir menu de navegação" });
 
     await user.click(trigger);
@@ -53,7 +62,7 @@ describe("Header", () => {
     auth.admin = { id: "admin-1", username: "gestor" };
     auth.status = "authenticated";
 
-    render(<Header />);
+    renderHeader();
 
     expect(screen.getByText("gestor")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Entrar" })).not.toBeInTheDocument();
@@ -62,7 +71,7 @@ describe("Header", () => {
   });
 
   it("has no automated accessibility violations", async () => {
-    const { container } = render(<Header />);
+    const { container } = renderHeader();
 
     expect(await axe(container)).toHaveNoViolations();
   });

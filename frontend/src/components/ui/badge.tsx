@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 type BadgeTone = "neutral" | "success" | "warning" | "error";
 
 const toneStyles: Record<BadgeTone, string> = {
-  neutral: "border-gray-500 bg-gray-100 [&_svg]:fill-gray-600 [&_svg]:text-gray-600",
+  neutral: "border-border bg-surface-subtle [&_svg]:fill-muted [&_svg]:text-muted",
   success:
     "border-success-strong bg-success-subtle [&_svg]:fill-success-strong [&_svg]:text-success-strong",
   warning:
@@ -23,7 +23,7 @@ export function Badge({ children, className, tone = "neutral", ...props }: Badge
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-900",
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide text-strong",
         toneStyles[tone],
         className,
       )}

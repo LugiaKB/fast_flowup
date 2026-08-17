@@ -16,6 +16,21 @@ describe("display primitives", () => {
     expect(screen.getByText("Ativo")).toBeInTheDocument();
   });
 
+  it("uses subtle card motion without layout shift and disables it for reduced motion", () => {
+    render(<Card aria-label="Card interativo">Conteúdo</Card>);
+
+    expect(screen.getByLabelText("Card interativo")).toHaveClass(
+      "transition-[border-color,box-shadow,transform]",
+      "duration-300",
+      "ease-out",
+      "hover:-translate-y-0.5",
+      "hover:border-primary/40",
+      "hover:shadow-card-hover",
+      "motion-reduce:transform-none",
+      "motion-reduce:transition-none",
+    );
+  });
+
   it("has no automated accessibility violations", async () => {
     const { container } = render(
       <Card>

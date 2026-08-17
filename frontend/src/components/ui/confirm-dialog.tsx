@@ -27,11 +27,11 @@ export function ConfirmDialog({
       <AlertDialog.Trigger asChild>{trigger}</AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 z-40 bg-gray-900/50" />
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-3rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-panel">
-          <AlertDialog.Title className="font-heading text-xl font-semibold text-gray-900">
+        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-3rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl bg-surface p-6 shadow-panel">
+          <AlertDialog.Title className="font-heading text-xl font-semibold text-strong">
             {title}
           </AlertDialog.Title>
-          <AlertDialog.Description className="mt-3 text-gray-700">
+          <AlertDialog.Description className="mt-3 text-body">
             {description}
           </AlertDialog.Description>
           {children}

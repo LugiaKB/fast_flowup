@@ -18,7 +18,7 @@ export function Pagination({ offset, limit, totalItems, onPageChange }: Paginati
       aria-label="Paginação"
       className="flex flex-col items-center justify-between gap-4 sm:flex-row"
     >
-      <p className="text-sm text-gray-700" aria-live="polite">
+      <p className="text-sm text-body" aria-live="polite">
         Exibindo {first}–{last} de {totalItems}
       </p>
       <div className="flex w-full gap-2 sm:w-auto">

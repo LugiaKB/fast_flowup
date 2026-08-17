@@ -30,6 +30,15 @@
   --color-gray-700: #374151;
   --color-gray-800: #1f2937;
   --color-gray-900: #111827;
+  --color-canvas: var(--theme-canvas);
+  --color-surface: var(--theme-surface);
+  --color-surface-subtle: var(--theme-surface-subtle);
+  --color-strong: var(--theme-text-strong);
+  --color-body: var(--theme-text-body);
+  --color-muted: var(--theme-text-muted);
+  --color-border: var(--theme-border);
+  --color-primary-contrast: var(--theme-primary-contrast);
+  --color-error-contrast: var(--theme-error-contrast);
 
   --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -52,12 +61,46 @@
 }
 
 :root {
+  --theme-canvas: #f9fafb;
+  --theme-surface: #ffffff;
+  --theme-surface-subtle: #f3f4f6;
+  --theme-text-strong: #111827;
+  --theme-text-body: #374151;
+  --theme-text-muted: #4b5563;
+  --theme-border: #d1d5db;
+  --theme-primary-contrast: #ffffff;
+  --theme-error-contrast: #ffffff;
   --container-max: 75rem;
   --container-padding: 1.5rem;
   --header-height: 4rem;
   --section-spacing: 4rem;
   --transition-fast: 200ms ease-in-out;
   --transition-card: 300ms ease;
+}
+
+[data-theme="dark"] {
+  --theme-canvas: #0b1020;
+  --theme-surface: #151b2e;
+  --theme-surface-subtle: #1d263d;
+  --theme-text-strong: #f9fafb;
+  --theme-text-body: #e5e7eb;
+  --theme-text-muted: #cbd5e1;
+  --theme-border: #475569;
+  --theme-primary-contrast: #111827;
+  --theme-error-contrast: #111827;
+  --color-primary: #a78bfa;
+  --color-primary-hover: #c4b5fd;
+  --color-primary-subtle: #2e2457;
+  --color-success-strong: #6ee7b7;
+  --color-success-subtle: #123c33;
+  --color-warning-strong: #fcd34d;
+  --color-warning-subtle: #422f10;
+  --color-error-strong: #fca5a5;
+  --color-error-subtle: #491b25;
+  --color-error-hover: #fecaca;
+  --shadow-card: 0 4px 12px rgb(0 0 0 / 0.28);
+  --shadow-card-hover: 0 12px 24px rgb(0 0 0 / 0.38);
+  --shadow-panel: 0 24px 48px rgb(0 0 0 / 0.5);
 }
 
 @media (min-width: 48rem) {
@@ -83,14 +126,14 @@
 
   html {
     min-width: 20rem;
-    background: var(--color-gray-50);
+    background: var(--theme-canvas);
   }
 
   body {
     min-height: 100vh;
     margin: 0;
-    background: var(--color-gray-50);
-    color: var(--color-gray-700);
+    background: var(--theme-canvas);
+    color: var(--theme-text-body);
     font-family: var(--font-body);
     line-height: 1.5;
     text-rendering: optimizeLegibility;
@@ -103,7 +146,7 @@
   h4,
   h5,
   h6 {
-    color: var(--color-gray-900);
+    color: var(--theme-text-strong);
     font-family: var(--font-heading);
     line-height: 1.25;
   }
@@ -121,7 +164,64 @@
   }
 }
 
+@keyframes sheet-enter {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sheet-exit {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes overlay-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlay-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.sheet-content[data-state="open"] {
+  animation: sheet-enter var(--transition-fast);
+}
+
+.sheet-content[data-state="closed"] {
+  animation: sheet-exit var(--transition-fast);
+}
+
+.sheet-overlay[data-state="open"] {
+  animation: overlay-enter var(--transition-fast);
+}
+
+.sheet-overlay[data-state="closed"] {
+  animation: overlay-exit var(--transition-fast);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .sheet-content,
+  .sheet-overlay {
+    animation: none !important;
+  }
+
   *,
   *::before,
   *::after {

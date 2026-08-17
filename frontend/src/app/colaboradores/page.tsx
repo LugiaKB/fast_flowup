@@ -49,7 +49,7 @@ export default function ColaboradoresPage() {
       <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
         <div className="max-w-2xl">
           <h1 className="text-3xl font-bold sm:text-4xl">Colaboradores</h1>
-          <p className="mt-3 text-lg text-gray-700">
+          <p className="mt-3 text-lg text-body">
             Consulte as pessoas ativas que podem participar dos workshops.
           </p>
         </div>
@@ -104,7 +104,7 @@ export default function ColaboradoresPage() {
               <h2 id="collaborator-results-title" className="text-xl font-semibold">
                 Resultados
               </h2>
-              <p aria-live="polite" className="text-sm text-gray-700">
+              <p aria-live="polite" className="text-sm text-body">
                 {data.totalItems} {data.totalItems === 1 ? "colaborador encontrado" : "colaboradores encontrados"}
               </p>
             </div>

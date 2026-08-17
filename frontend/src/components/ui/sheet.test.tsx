@@ -55,4 +55,26 @@ describe("Sheet", () => {
     ).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("uses transform-based entry and exit motion with a reduced-motion fallback", async () => {
+    const user = userEvent.setup();
+    render(<SheetExample />);
+
+    await user.click(screen.getByRole("button", { name: "Editar" }));
+
+    expect(screen.getByRole("dialog", { name: "Editar colaborador" })).toHaveClass(
+      "sheet-content",
+    );
+    expect(document.querySelector("[data-state='open'].sheet-overlay")).toBeInTheDocument();
+
+    const stylesheet = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
+    expect(stylesheet).toContain("@keyframes sheet-enter");
+    expect(stylesheet).toContain("@keyframes sheet-exit");
+    expect(stylesheet).toContain("transform: translateX(100%)");
+    expect(stylesheet).toMatch(
+      /prefers-reduced-motion: reduce[\s\S]*\.sheet-content[\s\S]*animation: none/,
+    );
+  });
 });
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";

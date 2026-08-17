@@ -45,7 +45,7 @@ export default function WorkshopsPage() {
       <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
         <div className="max-w-2xl">
           <h1 className="text-3xl font-bold sm:text-4xl">Workshops</h1>
-          <p className="mt-3 text-lg text-gray-700">
+          <p className="mt-3 text-lg text-body">
             Explore os encontros realizados e consulte quem participou de cada tema.
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function WorkshopsPage() {
               <h2 id="workshop-results-title" className="text-xl font-semibold">
                 Resultados
               </h2>
-              <p aria-live="polite" className="text-sm text-gray-700">
+              <p aria-live="polite" className="text-sm text-body">
                 {data.totalItems}{" "}
                 {data.totalItems === 1 ? "workshop encontrado" : "workshops encontrados"}
               </p>
@@ -109,8 +109,8 @@ export default function WorkshopsPage() {
                         className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                       >
                       <h3 className="text-xl font-semibold">{workshop.nome}</h3>
-                      <p className="mt-3 text-gray-700">{workshop.descricao}</p>
-                      <div className="mt-6 grid gap-2 text-sm text-gray-700">
+                      <p className="mt-3 text-body">{workshop.descricao}</p>
+                      <div className="mt-6 grid gap-2 text-sm text-body">
                         <p className="flex items-center gap-2">
                           <CalendarDays aria-hidden="true" className="size-5 text-primary" />
                           {formatWorkshopDate(workshop.dataRealizacao)}
@@ -123,7 +123,7 @@ export default function WorkshopsPage() {
                       </div>
                       </Link>
                       {isAdmin && (
-                        <div className="mt-5 grid gap-4 border-t border-gray-200 pt-5">
+                        <div className="mt-5 grid gap-4 border-t border-border pt-5">
                           <Badge tone={workshop.status === "active" ? "success" : "warning"}>
                             {workshop.status === "active" ? "Ativo" : "Arquivado"}
                           </Badge>

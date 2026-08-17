@@ -47,19 +47,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             defaultOpen
             onOpenChange={(open) => !open && setMessage(null)}
             duration={4_000}
-            className="grid w-[calc(100vw-3rem)] max-w-sm grid-cols-[1fr_auto] gap-x-4 rounded-xl border border-gray-200 bg-white p-4 shadow-panel"
+            className="grid w-[calc(100vw-3rem)] max-w-sm grid-cols-[1fr_auto] gap-x-4 rounded-xl border border-border bg-surface p-4 shadow-panel"
           >
-            <ToastPrimitive.Title className="col-start-1 row-start-1 font-semibold text-gray-900">
+            <ToastPrimitive.Title className="col-start-1 row-start-1 font-semibold text-strong">
               {message.title}
             </ToastPrimitive.Title>
             {message.description && (
-              <ToastPrimitive.Description className="col-start-1 row-start-2 mt-1 text-sm text-gray-700">
+              <ToastPrimitive.Description className="col-start-1 row-start-2 mt-1 text-sm text-body">
                 {message.description}
               </ToastPrimitive.Description>
             )}
             <ToastPrimitive.Close
               aria-label="Fechar notificação"
-              className="col-start-2 row-span-2 row-start-1 rounded-md p-1 text-gray-700 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-primary"
+              className="col-start-2 row-span-2 row-start-1 rounded-md p-1 text-body hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-primary"
             >
               <X aria-hidden="true" className="size-5" />
             </ToastPrimitive.Close>

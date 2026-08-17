@@ -20,14 +20,14 @@ interface StatusFilterProps {
 export function ColaboradorStatusSelect({ onChange, value }: StatusFilterProps) {
   return (
     <div className="grid gap-1.5">
-      <label htmlFor="collaborator-status" className="text-sm font-medium text-gray-700">
+      <label htmlFor="collaborator-status" className="text-sm font-medium text-body">
         Status dos colaboradores
       </label>
       <select
         id="collaborator-status"
         value={value}
         onChange={(event) => onChange(event.target.value as ColaboradorStatusFilter)}
-        className="min-h-12 rounded-lg border border-gray-300 bg-white px-4 text-base text-gray-900 focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/20"
+        className="min-h-12 rounded-lg border border-border bg-surface px-4 text-base text-strong focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/20"
       >
         <option value="active">Ativos</option>
         <option value="archived">Arquivados</option>

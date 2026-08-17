@@ -18,7 +18,10 @@ export default function WorkshopDetailPage() {
   const id = Number.isInteger(parsedId) && parsedId > 0 ? parsedId : null;
   const { request, status } = useAuth();
   const isAdmin = status === "authenticated";
-  const { data, error, isLoading, refetch } = useWorkshop(id, isAdmin ? request : undefined);
+  const { data, error, isLoading, refetch, updateData } = useWorkshop(
+    id,
+    isAdmin ? request : undefined,
+  );
   const notFound = id === null || (error instanceof ApiError && error.status === 404);
 
   return (
@@ -60,7 +63,7 @@ export default function WorkshopDetailPage() {
                     </Badge>
                   )}
                 </div>
-                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-gray-700">
+                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 text-body">
                   <p className="flex items-center gap-2">
                     <CalendarDays aria-hidden="true" className="size-5 text-primary" />
                     {formatWorkshopDate(data.dataRealizacao)}
@@ -84,19 +87,35 @@ export default function WorkshopDetailPage() {
               <h2 id="workshop-description" className="text-2xl font-semibold">
                 Sobre o workshop
               </h2>
-              <p className="mt-4 text-lg text-gray-700">{data.descricao}</p>
+              <p className="mt-4 text-lg text-body">{data.descricao}</p>
             </section>
 
             <section aria-labelledby="workshop-participants" className="mt-12">
               <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                <h2 id="workshop-participants" className="text-2xl font-semibold">
-                  Participantes
-                </h2>
+                <div>
+                  <h2 id="workshop-participants" className="text-2xl font-semibold">
+                    Participantes
+                  </h2>
+                  <p
+                    aria-label="Quantidade de participantes"
+                    aria-live="polite"
+                    className="mt-1 text-sm text-muted"
+                  >
+                    {data.participantCount}{" "}
+                    {data.participantCount === 1 ? "participante" : "participantes"}
+                  </p>
+                </div>
                 {isAdmin && data.status === "active" && (
                   <AttendanceManagement
                     workshopId={data.id}
                     participantes={data.participantes}
-                    onChanged={refetch}
+                    onChanged={(participantes) =>
+                      updateData((current) => ({
+                        ...current,
+                        participantes,
+                        participantCount: participantes.length,
+                      }))
+                    }
                   />
                 )}
               </div>

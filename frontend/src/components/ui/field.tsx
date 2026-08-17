@@ -20,12 +20,12 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
 
   return (
     <div className="grid gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-gray-700">
+      <label htmlFor={id} className="text-sm font-medium text-body">
         {label}
       </label>
       <div className="relative">
         {leadingIcon && (
-          <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-gray-600">
+          <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted">
             {leadingIcon}
           </span>
         )}
@@ -35,7 +35,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
           aria-describedby={descriptionId}
           aria-invalid={Boolean(error)}
           className={cn(
-            "min-h-12 w-full rounded-lg border border-gray-300 bg-white px-4 text-base text-gray-900 placeholder:text-gray-500 focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-70",
+            "min-h-12 w-full rounded-lg border border-border bg-surface px-4 text-base text-strong placeholder:text-muted focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-surface-subtle disabled:opacity-70",
             leadingIcon && "pl-11",
             error && "border-error-strong focus:border-error-strong focus:ring-error/20",
             className,
@@ -46,7 +46,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
       {(error || hint) && (
         <p
           id={descriptionId}
-          className={cn("text-sm text-gray-600", error && "text-error-strong")}
+          className={cn("text-sm text-muted", error && "text-error-strong")}
         >
           {error ?? hint}
         </p>
