@@ -96,6 +96,7 @@ if (!app.Environment.IsEnvironment("Testing"))
     var database = scope.ServiceProvider.GetRequiredService<WorkshopTrackerDbContext>();
     await database.Database.MigrateAsync();
     await WorkshopTracker.Infrastructure.Authentication.AdminSeeder.SynchronizeAsync(scope.ServiceProvider, app.Configuration);
+    await WorkshopTracker.Infrastructure.Persistence.DataSeeder.SeedAsync(database);
 }
 
 app.Run();
