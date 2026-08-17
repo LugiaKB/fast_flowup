@@ -1,6 +1,7 @@
 using WorkshopTracker.Application.Workshops;
 using System.Security.Claims;
 using WorkshopTracker.Domain.Workshops;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WorkshopTracker.Api.Endpoints;
 
@@ -66,7 +67,7 @@ public static class WorkshopsEndpoints
         .WithTags("Workshops")
         .RequireAuthorization();
 
-        endpoints.MapDelete("/api/workshops/{id:int}", async (int id, ArchiveWorkshopRequest request, ClaimsPrincipal user, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
+        endpoints.MapDelete("/api/workshops/{id:int}", async (int id, [FromBody] ArchiveWorkshopRequest request, ClaimsPrincipal user, ManageWorkshopsUseCase useCase, CancellationToken cancellationToken) =>
             await useCase.ArchiveAsync(id, request.Reason, user.FindFirstValue(ClaimTypes.NameIdentifier)!, request.SubstituiWorkshopId, cancellationToken) ? Results.NoContent() : NotFound())
         .WithName("archiveWorkshop")
         .WithTags("Workshops")
