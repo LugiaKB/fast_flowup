@@ -7,7 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: "http://localhost:3100",
     trace: "on-first-retry",
   },
   projects: [
@@ -15,10 +15,10 @@ export default defineConfig({
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "npm run dev",
+    command: "npm run dev -- --port 3100",
     env: { NEXT_PUBLIC_API_MODE: "mock" },
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
+    url: "http://localhost:3100",
+    reuseExistingServer: false,
     timeout: 120_000,
   },
 });

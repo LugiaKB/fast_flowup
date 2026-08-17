@@ -133,7 +133,7 @@ only transport configuration.
 ## Phase 8: Frontend Quality Gate
 
 - [X] T041 Add keyboard, responsive and reduced-motion coverage in `frontend/src/test/accessibility.test.tsx`
-- [ ] T042 Add mocked browser journeys for US1-US6 in `frontend/tests/e2e/mock-journeys.spec.ts`
+- [X] T042 Add mocked browser journeys for US1-US6 in `frontend/tests/e2e/mock-journeys.spec.ts`
 - [ ] T043 Run and fix frontend lint, typecheck, unit, accessibility and mocked Playwright suites via `frontend/package.json`
 
 **Checkpoint**: Frontend is complete before any backend source project is created.
