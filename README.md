@@ -94,6 +94,29 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_API_MODE` | `mock` / `api` | `mock` usa MSW sem backend; `api` conecta à API real |
 | `NEXT_PUBLIC_API_URL` | URL | Obrigatória quando `NEXT_PUBLIC_API_MODE=api` |
 
+## Execução Instantânea (Recomendado)
+
+Para subir a aplicação completa (Frontend + Backend + Banco) em um único comando:
+
+```bash
+./start.sh
+```
+
+O script:
+- Valida o Docker e Docker Compose
+- Cria o `.env` automaticamente com credenciais e chaves JWT se não existir
+- Constrói e inicializa os containers em segundo plano
+- Aguarda a saúde da API e do frontend
+- Exibe o painel com as URLs de acesso e credenciais administrativas
+
+Opções do script:
+
+```bash
+./start.sh --logs      # Inicia e acompanha os logs em tempo real
+./start.sh --mysql     # Inicia utilizando o profile MySQL 8.4
+./start.sh --stop      # Para todos os containers e libera as portas
+```
+
 ---
 
 ## Execução Local
